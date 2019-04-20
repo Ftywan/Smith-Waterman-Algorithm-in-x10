@@ -22,7 +22,7 @@ public class FastaReader {
         var line:String = null;
         try {
             line = fastaReader.readLine().trim();
-
+           
         } catch (e:Exception) {
             Console.OUT.println("Exception has been caught");
         }
