@@ -9,6 +9,7 @@ import x10.util.HashMap;
 import x10.array.Array_2;
 import x10.lang.Math;
 import x10.io.Console;
+import x10.lang.Char;
 
 
 public class SmithWaterman {
@@ -74,7 +75,7 @@ public class SmithWaterman {
     }
 
     private def similarity(i:Int, j:Int):Int {
-        return blosum62(seqToNum.get(seq1.charAt(i-1n).toString()), seqToNum.get(seq2.charAt(j-1n).toString));
+        return blosum62(seqToNum.get(seq1.charAt(i-1n)), seqToNum.get(seq2.charAt(j-1n));
     }
 
     public def buildMatrix() {
@@ -244,16 +245,16 @@ public class SmithWaterman {
         val fasta1:String = param(0n);
         val fasta2:String = param(1n);
         val match:String = param(2n);
-        val openPanalty:Int = param(3n) as Int;
-        val extPanalty:Int = param(4n) as Int;
+        val openPanalty:Int = parse(param(3n));
+        val extPanalty:Int = parse(param(4n));
 
         val sw:SmithWaterman = new SmithWaterman(fasta1, fasta2, match, openPanalty, extPanalty);
 
-        x10.Console.OUT.println("The max alignment score: ");
-        x10.Console.OUT.println(sw.getMaxScore());
+        Console.OUT.println("The max alignment score: ");
+        Console.OUT.println(sw.getMaxScore());
 
-        x10.Console.OUT.println("Matches: ");
-        x10.Console.OUT.println(getMatchNumber());
+        Console.OUT.println("Matches: ");
+        Console.OUT.println(getMatchNumber());
 
     }
 
@@ -313,31 +314,31 @@ class BlosumReader {
         }
     }
 
-    private def initSeqToNum(): HashMap[String, Int] {
-        val map:HashMap[String, Int] = new HashMap[String, Int]();
-        map.put("A", 0n);
-        map.put("R", 1n);
-        map.put("N", 2n);
-        map.put("D", 3n);
-        map.put("C", 4n);
-        map.put("Q", 5n);
-        map.put("E", 6n);
-        map.put("G", 7n);
-        map.put("H", 8n);
-        map.put("I", 9n);
-        map.put("L", 10n);
-        map.put("K", 11n);
-        map.put("M", 12n);
-        map.put("F", 13n);
-        map.put("P", 14n);
-        map.put("S", 15n);
-        map.put("T", 16n);
-        map.put("W", 17n);
-        map.put("Y", 18n);
-        map.put("V", 19n);
-        map.put("B", 20n);
-        map.put("Z", 21n);
-        map.put("X", 22n);
+    private def initSeqToNum(): HashMap[Char, Int] {
+        val map:HashMap[Char, Int] = new HashMap[Char, Int]();
+        map.put('A', 0n);
+        map.put('R', 1n);
+        map.put('N', 2n);
+        map.put('D', 3n);
+        map.put('C', 4n);
+        map.put('Q', 5n);
+        map.put('E', 6n);
+        map.put('G', 7n);
+        map.put('H', 8n);
+        map.put('I', 9n);
+        map.put('L', 10n);
+        map.put('K', 11n);
+        map.put('M', 12n);
+        map.put('F', 13n);
+        map.put('P', 14n);
+        map.put('S', 15n);
+        map.put('T', 16n);
+        map.put('W', 17n);
+        map.put('Y', 18n);
+        map.put('V', 19n);
+        map.put('B', 20n);
+        map.put('Z', 21n);
+        map.put('X', 22n);
         return map;
     }
 
@@ -369,7 +370,7 @@ class BlosumReader {
         return map;
     }
 
-    public def getSeqToNum(): HashMap[String, Int] {
+    public def getSeqToNum(): HashMap[Char, Int] {
         return this.SeqToNum;
     }
 
