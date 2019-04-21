@@ -11,6 +11,7 @@ import x10.lang.Math;
 import x10.io.Console;
 import x10.lang.Char;
 import x10.lang.*;
+import x10.io.*;
 
 
 public class SmithWaterman {
