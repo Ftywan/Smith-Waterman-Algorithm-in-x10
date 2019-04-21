@@ -22,8 +22,8 @@ public class SmithWaterman {
     //the score matrix
     private var score:Array_2[Int];
 
-    private var scoreLeft:Array_2[Double];
-    private var scoreUp:Array_2[Double];
+    private var scoreLeft:Array_2[Int];
+    private var scoreUp:Array_2[Int];
 
     //similarity fuction constant
     private val SCORE_THRESHOLD:Double = 19.9;
@@ -66,55 +66,51 @@ public class SmithWaterman {
         this.GAP_EXTENSION_PANALTY = extensionPanalty;
 
         score = new Array_2[Int](length1 + 1, length2 + 1);
-        scoreLeft = new Array_2(length1 + 1, length2 + 1);
-        scoreUp = new Array_2(length1 + 1, length2 + 1);
-        prevCells = new Array_2(length1 + 1, length2 + 1);
+        scoreLeft = new Array_2[Int](length1 + 1, length2 + 1);
+        scoreUp = new Array_2[Int](length1 + 1, length2 + 1);
+        prevCells = new Array_2[Int](length1 + 1, length2 + 1);
 
         buildMatrix();
     }
 
     private def similarity(i:Int, j:Int):Long {
-        return blosum62(seqToNum.get(seq1.charAt(i-1)), seqToNum.get(seq2.charAt(j-1)));
+        return blosum62(seqToNum.get(seq1.charAt(i-1n)), seqToNum.get(seq2.charAt(j-1n)));
     }
 
     public def buildMatrix() {
 
-        var i:Int;
-        var j:Int;
 
         //base case
-        score(0, 0) = 0;
-        scoreLeft(0, 0) = 0;
-        scoreUp(0, 0) = 0;
+        score(0, 0) = 0n;
+        scoreLeft(0, 0) = 0n;
+        scoreUp(0, 0) = 0n;
         prevCells(0,0) = DR_ZERO;
 
         //the first row
         for(i in 1..length1) {
-            score(i, 0) = 0;
-            scoreLeft(i, 0) = 0;
-            scoreUp(i, 0) = 0;
+            score(i, 0) = 0n;
+            scoreLeft(i, 0) = 0n;
+            scoreUp(i, 0) = 0n;
             prevCells(i, 0) = DR_ZERO;
         }
 
         //the first column
         for(j in 1..length2) {
-            score(0, j) = 0;
-            scoreLeft(0, j) = 0;
-            scoreUp(0, j) = 0;
+            score(0, j) = 0n;
+            scoreLeft(0, j) = 0n;
+            scoreUp(0, j) = 0n;
             prevCells(0, j) = DR_ZERO;
         }
 
-        diagnalCover(1, 1, length1, length2);
+        diagnalCover(1n, 1n, length1, length2);
 
     }
 
     public def diagnalCover(var a1:Int, var b1:Int, var a2:Int, var b2:Int) {
-        var i:Int = a1;
-        var j:Int = b1;
 
         //start from row 0
         for(j in b1 .. b2) {
-            i = a1;
+            var i:Int = a1;
             while(i <= a2 && j >= b1) {
                 calculateScore(i, j);
                 i++;
@@ -124,7 +120,7 @@ public class SmithWaterman {
 
         //continue from final col
         for(i in a1+1 .. a2) {
-            j = b2;
+            var j:Int = b2;
             while(i <=a2 && j >= b1) {
                 calculateScore(i, j);
                 i++;
