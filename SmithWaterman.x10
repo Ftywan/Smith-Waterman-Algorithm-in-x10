@@ -257,7 +257,7 @@ public class SmithWaterman {
         Console.OUT.println(sw.getMaxScore());
 
         Console.OUT.println("Matches: ");
-        Console.OUT.println(getMatchNumber());
+        Console.OUT.println(sw.getMatchNumber());
 
     }
 
