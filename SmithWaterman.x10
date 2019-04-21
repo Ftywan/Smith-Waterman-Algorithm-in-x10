@@ -275,7 +275,7 @@ class FastaReader {
         val header:String = fastaReader.readLine();
         val builder:StringBuilder = new StringBuilder();
         var line:String = null;
-        var iterator:ReaderIterator<String> = fastaReader.lines();
+        var iterator:ReaderIterator[String] = fastaReader.lines();
         while (iterator.hasNext()) {
             line = iterator.next().trim();
             builder.add(line);
