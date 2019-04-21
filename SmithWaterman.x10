@@ -30,7 +30,7 @@ public class SmithWaterman {
     private val MATCH_SCORE:Double;
     private val GAP_OPENING_PANALTY:Double;
     private val GAP_EXTENSION_PANALTY:Double;
-    private val INDEL_SCORE:Int = -9;
+    private val INDEL_SCORE:Double = -9;
 
     //constant in direction matrix
     private val DR_LEFT:Int = 1;// 0001
@@ -75,11 +75,7 @@ public class SmithWaterman {
         buildMatrix();
     }
 
-    private def similarity(i:Int, j:Int):Double {
-        if(i == 0 || j == 0) {
-            return INDEL_SCORE;
-        }
-
+    private def similarity(i:Int, j:Int):Long {
         return blosum62[seqToNum.get(seq1.charAt(i-1))][seqToNum.get(seq2.charAt(j-1))];
 
     }
@@ -168,7 +164,7 @@ public class SmithWaterman {
         if (upScore == score(i, j)) {
             prevCells(i, j) |= DR_UP;
         }
-        if (0 == score(i, j)]) {
+        if (0 == score(i, j)) {
             prevCells(i, j) |= DR_ZERO;
         }
     }
@@ -178,7 +174,7 @@ public class SmithWaterman {
 
         for(var i:Int in 1 .. length1) {
             for(var j:Int in 1 .. length2) {
-                if(score(i, j) > maxScore {
+                if(score(i, j) > maxScore) {
                     maxScore = score(i, j);
                 }
             }
@@ -246,10 +242,8 @@ public class SmithWaterman {
 
     def main(argv: Array[String](1)) {
         x10.Console.OUT.println("Input the FASTA_FILE_1 FASTA_FILE_2 MATCH_FILE GAP_OPENING_PANALTY GAP_EXTENSION_PANALTY");
-        try {
-            val s = x10.io.Console.IN.readLine();
-        } catch (x10.io.IOException);
-
+        val s = x10.io.Console.IN.readLine();
+        
         val param = s.split(" ");
 
         val fasta1:String = param(0);
@@ -265,8 +259,6 @@ public class SmithWaterman {
 
         x10.Console.OUT.println("Matches: ");
         x10.Console.OUT.println(getMatchNumber());
-
-
 
     }
 
