@@ -72,7 +72,7 @@ public class SmithWaterman {
         scoreUp = new Array_2[Int](length1 + 1, length2 + 1);
         prevCells = new Array_2[Int](length1 + 1, length2 + 1);
 
-        buildMatrix();
+        
     }
 
     private def similarity(i:Int, j:Int):Int {
@@ -229,10 +229,11 @@ public class SmithWaterman {
                 }
             }
         }
+        return matches;
     }
 
     public def getTototalNumber():Int {
-
+        return 0;
     }
 
 
@@ -246,10 +247,11 @@ public class SmithWaterman {
         val fasta1:String = param(0n);
         val fasta2:String = param(1n);
         val match:String = param(2n);
-        val openPanalty:Int = parse(param(3n));
-        val extPanalty:Int = parse(param(4n));
+        val openPanalty:Int = Int.parse(param(3n));
+        val extPanalty:Int = Int.parse(param(4n));
 
         val sw:SmithWaterman = new SmithWaterman(fasta1, fasta2, match, openPanalty, extPanalty);
+        sw.buildMatrix();
 
         Console.OUT.println("The max alignment score: ");
         Console.OUT.println(sw.getMaxScore());
@@ -276,8 +278,7 @@ class FastaReader {
         var line:String = null;
 
         while (true) {
-                line = fastaReader.readLine().trim();
-            }
+            line = fastaReader.readLine().trim();
             builder.add(line);
         }
         return builder.toString();
