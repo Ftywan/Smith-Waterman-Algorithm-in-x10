@@ -7,38 +7,227 @@ import x10.io.FileReader;
 import x10.lang.Exception;
 import x10.util.HashMap;
 import x10.array.Array_2;
+import x10.lang.Math;
+import x10.io.Console;
 
 
-public class SmityWaterman {
+public class SmithWaterman {
+
+    //two sequences of AA
     private val seq1:String;
     private val seq2:String;
     private val length1:Int;
     private val length2:Int;
+
+    //the score matrix
     private var score:Array_2[Double];
+
+    //similarity fuction constant
+    private val SCORE_THRESHOLD:Double = 19.9;
     private val MATCH_SCORE:Double;
-    private val GAPOPEN_SCORE:Double;
-    private val GAPEXT_SCORE:Double;
+    private val GAP_OPENING_PANALTY:Double;
+    private val GAP_EXTENSION_PANALTY:Double;
+    private val INDEL_SCORE:Int = -9;
+
+    //constant in direction matrix
     private val DR_LEFT:Int = 1;// 0001
     private val DR_UP:Int = 2;// 0010
     private val DR_DIAG:Int = 4;// 0100
     private val DR_ZERO:Int = 8;// 1000
-    private val BLOSUM62:Array_2[Long];
-    private val MAP:HashMap[String, Int];
+
+    //direction matrix
+    private var prevCells:Array_2[Int];
+
+    private val blosum62:Array_2[Long];
+
+    private val seqToNum:HashMap[String, Int];
     private var sizesOfVerticalGaps:Array[Short];
     private var sizesOfHorizontalGaps:Array[Short];
-    private var prevCells:Array_2[Double];
-    private val blosumReader: BlosumReader;
+    private val blosumReader:BlosumReader;
+    private val fastaReader:FastaReade;
     
 
-    public def this(fasta1:Rail[String], fasta2:Rail[String]) {
-        this.seq1 = FastaReader.readFastaFile(fasta1);
-        this.seq2 = FastaReader.readFastaFile(fasta2);
-        this.blosumReader = new BlosumReader('./BLOSUM62');
+    public def this(fastaName1:String, fastaName2:String, blosumFileName:String, openPanalty:Double, extensionPanalty:Double) {
+        
+        fastaReader = new FastaReader();
+        this.blosumReader = new BlosumReader(blosumFileName);
+        this.blosum62 = blosumReader.getBlosum62();
+        this.seqToNum = blosumReader.getSeqToNum();
+
+        this.seq1 = fastaReader.readFastaFile(fasta1);
+        this.seq2 = fastaReader.readFastaFile(fasta2);
+        this.length1 = seq1.length();
+        this.length2 = seq2.length();
+
+        this.GAP_OPENING_PANALTY = openPanalty;
+        this.GAP_EXTENSION_PANALTY = extensionPanalty;
+
+        score = new Array_2(length1 + 1, length2 + 1);
+        prevCells = new Array_2(length1 + 1, length2 + 1);
+
+        buildMatrix();
+    }
+
+    private def similarity(i:Int, j:Int):Double {
+        if(i == 0 || j == 0) {
+            return INDEL_SCORE;
+        }
+
+        return blosum62[seqToNum.get(seq1.charAt(i-1))][seqToNum.get(seq2.charAt(j-1))];
 
     }
 
+    public def buildMatrix() {
+
+        var i:Int;
+        var j:Int;
+
+        //base case
+        score(0, 0) = 0;
+        prevCells(0,0) = DR_ZERO;
+
+        //the first row
+        for(i in 1..length1) {
+            score(i, 0) = 0;
+            prevCells(i, 0) = DR_ZERO;
+        }
+
+        //the first column
+        for(j in 1..length2) {
+            score(0, j) = 0;
+            prevCells(0, j) = DR_ZERO;
+        }
+
+        //rest of matrix
+        for(i in 1..length1) {
+            for(j in 1..length2) {
+                var diagScore:Double = score(i-1, j-1) + similarity(i, j);
+                var upScore:Double = score(i, j-1) +similarity(0, j);
+                var leftScore = sore(i-1, j) + similarity(i, 0);
+
+                score(i, j) = Math.max(diagScore, Math.max(upScore, Math.max(leftScore, 0)));
+                prevCells(i, j) = 0;
+
+                if (diagScore == score(i, j)) {
+                    prevCells(i, j) |= DR_DIAG;
+                }
+                if (leftScore == score(i, j)) {
+                    prevCells(i, j) |= DR_LEFT;
+                }
+                if (upScore == score(i, j)) {
+                    prevCells(i, j) |= DR_UP;
+                }
+                if (0 == score(i, j)]) {
+                    prevCells(i, j) |= DR_ZERO;
+                }
+            }
+        }
+    }
+
+    public def getMaxScore():Double {
+        var maxScore:Double = 0;
+
+        for(var i:Int in 1 .. length1) {
+            for(var j:Int in 1 .. length2) {
+                if(score(i, j) > maxScore {
+                    maxScore = score(i, j);
+                }
+            }
+        }
+        return maxScore;
+    }
+
+
+    // TODO: printAlignments()
+
+    //returns the end point of tracing back (the top left cell) and the number of matches
+    public def traceback(var i:Int, var j:Int):Rail[Int] {
+        var num:Int = 0;
+
+        //find the direction to traceback
+        while (true)
+        {
+            if ((prevCells(i, j) & DR_LEFT) > 0) {
+                num ++;
+                if (score(i-1, j)>0) i--;
+                else    break;              
+            }
+            if ((prevCells(i, j) & DR_UP) > 0) {
+                num ++;
+//          return traceback(i, j-1);
+                if (score(i, j-1)>0) j--;
+                else    break;              
+            }
+            if ((prevCells(i, j) & DR_DIAG) > 0) {
+                num ++;
+//          return traceback(i-1, j-1);
+                if (score(i-1, j-1)>0) {i--;j--;}
+                else     break;             
+            }
+        }
+        var point = [i, j, num];
+        return point;
+    }
+
+    public def getMatchNumber():Int {
+
+        var matches:Int = 0;
+
+        for(var i:Int in 1..length1) {
+            for(var j:Int in 1..length2) {
+                if(score(i, j) > SCORE_THRESHOLD && score(i, j) > score(i-1, j)
+                    && score(i, j) > score(i ,j-1) && score(i, j) > score(i-1, j-1))
+                {
+                    if(i == length1 || j == length2 || score(i, j) > score(i+1, j+1))
+                    {
+                        var endPoint:Rail[Int] = traceback(i, j);
+
+                        matches += endPoint(2);
+                    }
+                }
+            }
+        }
+    }
+
+    public def getTototalNumber():Int {
+
+    }
+
+    
+
+    def main(argv: Array[String](1)) {
+        x10.Console.OUT.println("Input the FASTA_FILE_1 FASTA_FILE_2 MATCH_FILE GAP_OPENING_PANALTY GAP_EXTENSION_PANALTY");
+        try {
+            val s = x10.io.Console.IN.readLine();
+        } catch (x10.io.IOException);
+
+        val param = s.split(" ");
+
+        val fasta1:String = param(0);
+        val fasta2:String = param(1);
+        val match:String = param(2);
+        val openPanalty:Double = param(3) as Double;
+        val extPanalty:Double = param(4) as Double;
+
+        val sw:SmithWaterman = new SmithWaterman(fasta1, fasta2, match, openPanalty, extPanalty);
+
+        x10.Console.OUT.println("The max alignment score: ");
+        x10.Console.OUT.println(sw.getMaxScore());
+
+        x10.Console.OUT.println("Matches: ");
+        x10.Console.OUT.println(getMatchNumber());
+
+
+
+    }
 
 }
+
+
+
+
+
+
 
 class class FastaReader {
     public static def readFastaFile(fastaFileName:String):String {
@@ -60,7 +249,7 @@ class class FastaReader {
     } 
 }
 
- class BlosumReader {
+class BlosumReader {
     private var BLOSUM62: Array_2[Int];
     private val SeqToNum: HashMap[String, Int];
     private val NumToSeq: HashMap[Int, String];
