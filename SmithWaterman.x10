@@ -26,11 +26,11 @@ public class SmithWaterman {
     private var scoreUp:Array_2[Int];
 
     //similarity fuction constant
-    private val SCORE_THRESHOLD:Int = 19.9;
+    private val SCORE_THRESHOLD:Int = 19n;
     private val MATCH_SCORE:Int;
     private val GAP_OPENING_PANALTY:Int;
     private val GAP_EXTENSION_PANALTY:Int;
-    private val INDEL_SCORE:Int = -9;
+    private val INDEL_SCORE:Int = -9n;
 
     //constant in direction matrix
     private val DR_LEFT:Int = 1n;// 0001
@@ -73,7 +73,7 @@ public class SmithWaterman {
         buildMatrix();
     }
 
-    private def similarity(i:Int, j:Int):Long {
+    private def similarity(i:Int, j:Int):Int {
         return blosum62(seqToNum.get(seq1.charAt(i-1n)), seqToNum.get(seq2.charAt(j-1n)));
     }
 
@@ -111,19 +111,21 @@ public class SmithWaterman {
         //start from row 0
         for(j in b1 .. b2) {
             var i:Int = a1;
-            while(i <= a2 && j >= b1) {
-                calculateScore(i, j);
+            var k:Int = j;
+            while(i <= a2 && k >= b1) {
+                calculateScore(i, k);
                 i++;
-                j--;
+                k--;
             }
         }
 
         //continue from final col
-        for(i in a1+1 .. a2) {
+        for(i in (a1+1) .. a2) {
             var j:Int = b2;
-            while(i <=a2 && j >= b1) {
-                calculateScore(i, j);
-                i++;
+            var k:Int = i;
+            while(k <=a2 && j >= b1) {
+                calculateScore(k, j);
+                k++;
                 j--;
             }
         }
@@ -145,8 +147,8 @@ public class SmithWaterman {
         var upScore:Int = scoreUp(i, j-1);
         var leftScore:Int = scoreLeft(i-1, j);
 
-        score(i, j) = Math.max(diagScore, Math.max(upScore, Math.max(leftScore, 0)));
-        prevCells(i, j) = 0;
+        score(i, j) = Math.max(diagScore, Math.max(upScore, Math.max(leftScore, 0n)));
+        prevCells(i, j) = 0n;
 
         if (diagScore == score(i, j)) {
             prevCells(i, j) |= DR_DIAG;
@@ -157,7 +159,7 @@ public class SmithWaterman {
         if (upScore == score(i, j)) {
             prevCells(i, j) |= DR_UP;
         }
-        if (0 == score(i, j)) {
+        if (0n == score(i, j)) {
             prevCells(i, j) |= DR_ZERO;
         }
     }
