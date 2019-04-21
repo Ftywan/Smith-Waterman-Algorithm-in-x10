@@ -238,7 +238,7 @@ public class SmithWaterman {
 
 
 
-    def main(argv: Rail[String]) {
+    public static def main(argv: Rail[String]) {
         Console.OUT.println("Input the FASTA_FILE_1 FASTA_FILE_2 MATCH_FILE GAP_OPENING_PANALTY GAP_EXTENSION_PANALTY");
         val s = x10.io.Console.IN.readLine();
 
