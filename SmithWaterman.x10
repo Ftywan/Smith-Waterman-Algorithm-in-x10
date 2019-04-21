@@ -1,5 +1,13 @@
 package smithwatermanalgo;
-import x10.array.*;
+import x10.lang.String;
+import x10.io.Console;
+import x10.io.File;
+import x10.util.StringBuilder;
+import x10.io.FileReader;
+import x10.lang.Exception;
+import x10.util.HashMap;
+import x10.array.Array_2;
+
 
 public class SmityWaterman {
     private val seq1:String;
@@ -19,107 +27,138 @@ public class SmityWaterman {
     private var sizesOfVerticalGaps:Array[Short];
     private var sizesOfHorizontalGaps:Array[Short];
     private var prevCells:Array_2[Double];
+    private val blosumReader: BlosumReader;
     
 
-    public def SmithWatermans(seq1:Rail[String], seq2:Rail[String]) {
-        this.seq1 = seq1;
-        this.seq2 = seq2;
-        this.length1 = seq1.length();
-        this.length2 = seq2.length();
-        score = new Array_2[Double](length1 + 1, length2 + 1);
-        prevCells = new Array_2[Int](length1 + 1, length2 + 1);
-   
-    }
-
-    public def similarity(i:Int, j:Int):Double {
-        if (seq1.charAt(i - 1) == seq2.charAt(j - 1)) {
-            return MATCH_SCORE;
-        } else {
-            return GAPOPEN_SCORE;
-        }
-    }
-
-    public def initMatrix() {
-        var i:Int = 0;
-        var j:Int = 0;
-        for (i in 0..(length1)) {
-            score(i, 0) = 0;
-            prevCells(i, 0) = DR_ZERO;
-        }
-        for (j in 0..(length2)) {
-            score(0, j) = 0;
-            prevCells(0, j) = DR_ZERO;
-        }
+    public def this(fasta1:Rail[String], fasta2:Rail[String]) {
+        this.seq1 = FastaReader.readFastaFile(fasta1);
+        this.seq2 = FastaReader.readFastaFile(fasta2);
+        this.blosumReader = new BlosumReader();
 
     }
-    public def readFastaFile(fastaFileName:String):String {
-        val fastaFile = new File(fastaFileName);
-        val fastaReader = new FileReader(fastaFile);
-        val header = fastaReader.readLine();
-        val builder = new StringBuilder();
-        val line = fastaReader.readLine();
-        while (line != null) {
-            builder.append(line);
-        } 
+
+
+}
+
+class class FastaReader {
+    public static def readFastaFile(fastaFileName:String):String {
+        val fastaFile:File = new File(fastaFileName);
+        val fastaReader:FileReader = fastaFile.openRead();
+        val header:String = fastaReader.readLine();
+        val builder:StringBuilder = new StringBuilder();
+        var line:String = null;
+
+        while (true) {
+            try {
+                line = fastaReader.readLine().trim();
+            } catch (e:EOFException) {
+                break;
+            }
+            builder.add(line);
+        }
         return builder.toString();
+    } 
+}
+
+ class BlosumReader {
+    private var BLOSUM62: Array_2[Int];
+    private val SeqToNum: HashMap[String, Int];
+    private val NumToSeq: HashMap[Int, String];
+    private val NUMOFSEQ: Int = 23n;
+
+    public def this(blosumFileName: String) {
+        this.SeqToNum = this.initSeqToNum();
+        this.NumToSeq = this.initNumToSeq();
+        this.BLOSUM62 = new Array_2[Int](NUMOFSEQ + 1n, NUMOFSEQ + 1n);
+        this.readBlosumFile(blosumFileName);
     }
 
-    public def readBlosumFile(blosumFileName:String):Array_2[Long] {
-        val blosumFile = new File(blosumFileName);
-        val blosumFileReader = blosumFile.openRead();
-        val blosum62:Array_2[Long] = new Array_2[Long]()
-        
-      
+    private def readBlosumFile(blosumFileName: String) {
+        val fastaFile: File = new File(blosumFileName);
+        val fastaReader: FileReader = fastaFile.openRead();
+        val header: String = fastaReader.readLine().trim();
+        var line: String = null;
+        var chars: Rail[String] = new Rail[String](NUMOFSEQ + 1n);
+        for (i in 0n .. (NUMOFSEQ)) {
+            line = fastaReader.readLine().trim();
+            chars = line.split(" ");
+            for (j in 0n .. NUMOFSEQ) {
+                this.BLOSUM62(i, j) = Int.parseInt(chars(j + 1n));
+            }
+        }
     }
 
-    public def initMap() {
-        this.map = new HashMap[String, Int]();
-        map.put("A", 0);
-        map.put("R", 1);
-        map.put("N", 2);
-        map.put("D", 3);
-        map.put("C", 4);
-        map.put("Q", 5);
-        map.put("E", 6);
-        map.put("G", 7);
-        map.put("H", 8);
-        map.put("I", 9);
-        map.put("L", 10);
-        map.put("K", 11);
-        map.put("M", 12);
-        map.put("F", 13);
-        map.put("P", 14);
-        map.put("S", 15);
-        map.put("T", 16);
-        map.put("W", 17);
-        map.put("X", 18);
-        map.put("Y", 19);
-        map.put("V", 20);
+    private def initSeqToNum(): HashMap[String, Int] {
+        val map:HashMap[String, Int] = new HashMap[String, Int]();
+        map.put("A", 0n);
+        map.put("R", 1n);
+        map.put("N", 2n);
+        map.put("D", 3n);
+        map.put("C", 4n);
+        map.put("Q", 5n);
+        map.put("E", 6n);
+        map.put("G", 7n);
+        map.put("H", 8n);
+        map.put("I", 9n);
+        map.put("L", 10n);
+        map.put("K", 11n);
+        map.put("M", 12n);
+        map.put("F", 13n);
+        map.put("P", 14n);
+        map.put("S", 15n);
+        map.put("T", 16n);
+        map.put("W", 17n);
+        map.put("Y", 18n);
+        map.put("V", 19n);
+        map.put("B", 20n);
+        map.put("Z", 21n);
+        map.put("X", 22n);
+        return map;
+    }
+
+    private def initNumToSeq(): HashMap[Int, String] {
+        val map:HashMap[Int, String] = new HashMap[Int, String]();
+        map.put(0n, "A");
+        map.put(1n, "R");
+        map.put(2n, "N");
+        map.put(3n, "D");
+        map.put(4n, "C");
+        map.put(5n, "Q");
+        map.put(6n, "E");
+        map.put(7n, "G");
+        map.put(8n, "H");
+        map.put(9n, "I");
+        map.put(10n, "L");
+        map.put(11n, "K");
+        map.put(12n, "M");
+        map.put(13n, "F");
+        map.put(14n, "P");
+        map.put(15n, "S");
+        map.put(16n, "T");
+        map.put(17n, "W");
+        map.put(18n, "Y ");
+        map.put(19n, "V");
+        map.put(20n, "B");
+        map.put(21n, "Z");
+        map.put(22n, "X");
+        return map;
+    }
+
+    public def getSeqToNum(): HashMap[String, Int] {
+        return this.SeqToNum;
+    }
+
+    public def getNumToSeq(): HashMap[Int, String] {
+        return this.NumToSeq;
+    }
+
+    public def getBlosum62(): Array_2[Int] {
+        return this.BLOSUM62;
     }
 }
 
-/**
- * Blosum-62 substitution matrix
-* #   A  R  N  D  C  Q  E  G  H  I  L  K  M  F  P  S  T  W  Y  V 
-* A  4 -1 -2 -2  0 -1 -1  0 -2 -1 -1 -1 -1 -2 -1  1  0 -3 -2  0 
-* R -1  5  0 -2 -3  1  0 -2  0 -3 -2  2 -1 -3 -2 -1 -1 -3 -2 -3 
-* N -2  0  6  1 -3  0  0  0  1 -3 -3  0 -2 -3 -2  1  0 -4 -2 -3 
-* D -2 -2  1  6 -3  0  2 -1 -1 -3 -4 -1 -3 -3 -1  0 -1 -4 -3 -3 
-* C  0 -3 -3 -3  9 -3 -4 -3 -3 -1 -1 -3 -1 -2 -3 -1 -1 -2 -2 -1 
-* Q -1  1  0  0 -3  5  2 -2  0 -3 -2  1  0 -3 -1  0 -1 -2 -1 -2 
-* E -1  0  0  2 -4  2  5 -2  0 -3 -3  1 -2 -3 -1  0 -1 -3 -2 -2 
-* G  0 -2  0 -1 -3 -2 -2  6 -2 -4 -4 -2 -3 -3 -2  0 -2 -2 -3 -3 
-* H -2  0  1 -1 -3  0  0 -2  8 -3 -3 -1 -2 -1 -2 -1 -2 -2  2 -3 
-* I -1 -3 -3 -3 -1 -3 -3 -4 -3  4  2 -3  1  0 -3 -2 -1 -3 -1  3 
-* L -1 -2 -3 -4 -1 -2 -3 -4 -3  2  4 -2  2  0 -3 -2 -1 -2 -1  1 
-* K -1  2  0 -1 -3  1  1 -2 -1 -3 -2  5 -1 -3 -1  0 -1 -3 -2 -2 
-* M -1 -1 -2 -3 -1  0 -2 -3 -2  1  2 -1  5  0 -2 -1 -1 -1 -1  1 
-* F -2 -3 -3 -3 -2 -3 -3 -3 -1  0  0 -3  0  6 -4 -2 -2  1  3 -1 
-* P -1 -2 -2 -1 -3 -1 -1 -2 -2 -3 -3 -1 -2 -4  7 -1 -1 -4 -3 -2 
-* S  1 -1  1  0 -1  0  0  0 -1 -2 -2  0 -1 -2 -1  4  1 -3 -2 -2 
-* T  0 -1  0 -1 -1 -1 -1 -2 -2 -1 -1 -1 -1 -2 -1  1  5 -2 -2  0 
-* W -3 -3 -4 -4 -2 -2 -3 -2 -2 -3 -2 -3 -1  1 -4 -3 -2 11  2 -3 
-* Y -2 -2 -2 -3 -2 -1 -2 -3  2 -1 -1 -2 -1  3 -3 -2 -2  2  7 -1 
-* V  0 -3 -3 -3 -1 -2 -2 -3 -3  3  1 -2  1 -1 -2 -2  0 -3 -1  4 
-*/
+
+
+
+
 
