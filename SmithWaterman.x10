@@ -10,6 +10,7 @@ import x10.array.Array_2;
 import x10.lang.Math;
 import x10.io.Console;
 import x10.lang.Char;
+import x10.lang.*;
 
 
 public class SmithWaterman {
@@ -46,7 +47,7 @@ public class SmithWaterman {
 
     private val blosum62:Array_2[Int];
 
-    private val seqToNum:HashMap[String, Int];
+    private val seqToNum:HashMap[Char, Int];
     private val blosumReader:BlosumReader;
     private val fastaReader:FastaReader;
     
@@ -75,7 +76,7 @@ public class SmithWaterman {
     }
 
     private def similarity(i:Int, j:Int):Int {
-        return blosum62(seqToNum.get(seq1.charAt(i-1n)), seqToNum.get(seq2.charAt(j-1n));
+        return blosum62(seqToNum.get(seq1.charAt(i-1n)), seqToNum.get(seq2.charAt(j-1n)));
     }
 
     public def buildMatrix() {
@@ -275,10 +276,7 @@ class FastaReader {
         var line:String = null;
 
         while (true) {
-            try {
                 line = fastaReader.readLine().trim();
-            } catch (e:EOFException) {
-                break;
             }
             builder.add(line);
         }
@@ -288,7 +286,7 @@ class FastaReader {
 
 class BlosumReader {
     private var BLOSUM62: Array_2[Int];
-    private val SeqToNum: HashMap[String, Int];
+    private val SeqToNum: HashMap[Char, Int];
     private val NumToSeq: HashMap[Int, String];
     private val NUMOFSEQ: Int = 23n;
 
