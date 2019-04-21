@@ -120,7 +120,7 @@ public class SmithWaterman {
         }
 
         //continue from final col
-        for(i in (a1+1) .. a2) {
+        for(i in (a1+1n) .. a2) {
             var j:Int = b2;
             var k:Int = i;
             while(k <=a2 && j >= b1) {
@@ -165,7 +165,7 @@ public class SmithWaterman {
     }
 
     public def getMaxScore():Int {
-        var maxScore:Int = 0;
+        var maxScore:Int = 0n;
 
         for(i in 1 .. length1) {
             for(j in 1 .. length2) {
@@ -182,7 +182,7 @@ public class SmithWaterman {
 
     //returns the end point of tracing back (the top left cell) and the number of matches
     public def traceback(var i:Int, var j:Int):Rail[Int] {
-        var num:Int = 0;
+        var num:Int = 0n;
 
         //find the direction to traceback
         while (true)
@@ -211,7 +211,7 @@ public class SmithWaterman {
 
     public def getMatchNumber():Int {
 
-        var matches:Int = 0;
+        var matches:Int = 0n;
 
         for(i in 1..length1) {
             for(j in 1..length2) {
@@ -235,7 +235,7 @@ public class SmithWaterman {
 
 
 
-    def main(argv: Array[String](1)) {
+    def main(argv: Array[String](1n)) {
         x10.Console.OUT.println("Input the FASTA_FILE_1 FASTA_FILE_2 MATCH_FILE GAP_OPENING_PANALTY GAP_EXTENSION_PANALTY");
         val s = x10.io.Console.IN.readLine();
 
