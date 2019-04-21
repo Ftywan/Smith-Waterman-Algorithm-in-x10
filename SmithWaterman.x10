@@ -20,7 +20,7 @@ public class SmithWaterman {
     private val length2:Int;
 
     //the score matrix
-    private var score:Array_2[Double];
+    private var score:Array_2[Int];
 
     private var scoreLeft:Array_2[Double];
     private var scoreUp:Array_2[Double];
@@ -43,7 +43,7 @@ public class SmithWaterman {
     //direction matrix
     private var prevCells:Array_2[Int];
 
-    private val blosum62:Array_2[Long];
+    private val blosum62:Array_2[Int];
 
     private val seqToNum:HashMap[String, Int];
     private val blosumReader:BlosumReader;
@@ -57,15 +57,15 @@ public class SmithWaterman {
         this.blosum62 = blosumReader.getBlosum62();
         this.seqToNum = blosumReader.getSeqToNum();
 
-        this.seq1 = fastaReader.readFastaFile(fasta1);
-        this.seq2 = fastaReader.readFastaFile(fasta2);
+        this.seq1 = fastaReader.readFastaFile(fastaName1);
+        this.seq2 = fastaReader.readFastaFile(fastaName2);
         this.length1 = seq1.length();
         this.length2 = seq2.length();
 
         this.GAP_OPENING_PANALTY = openPanalty;
         this.GAP_EXTENSION_PANALTY = extensionPanalty;
 
-        score = new Array_2(length1 + 1, length2 + 1);
+        score = new Array_2[Int](length1 + 1, length2 + 1);
         scoreLeft = new Array_2(length1 + 1, length2 + 1);
         scoreUp = new Array_2(length1 + 1, length2 + 1);
         prevCells = new Array_2(length1 + 1, length2 + 1);
@@ -215,8 +215,8 @@ public class SmithWaterman {
 
         var matches:Int = 0;
 
-        for(var i:Int in 1..length1) {
-            for(var j:Int in 1..length2) {
+        for(i in 1..length1) {
+            for(j in 1..length2) {
                 if(score(i, j) > SCORE_THRESHOLD && score(i, j) > score(i-1, j)
                     && score(i, j) > score(i ,j-1) && score(i, j) > score(i-1, j-1))
                 {
