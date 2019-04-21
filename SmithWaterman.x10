@@ -33,10 +33,10 @@ public class SmithWaterman {
     private val INDEL_SCORE:Double = -9;
 
     //constant in direction matrix
-    private val DR_LEFT:Int = 1;// 0001
-    private val DR_UP:Int = 2;// 0010
-    private val DR_DIAG:Int = 4;// 0100
-    private val DR_ZERO:Int = 8;// 1000
+    private val DR_LEFT:Int = 1n;// 0001
+    private val DR_UP:Int = 2n;// 0010
+    private val DR_DIAG:Int = 4n;// 0100
+    private val DR_ZERO:Int = 8n;// 1000
 
 
 
@@ -46,10 +46,8 @@ public class SmithWaterman {
     private val blosum62:Array_2[Long];
 
     private val seqToNum:HashMap[String, Int];
-    private var sizesOfVerticalGaps:Array[Short];
-    private var sizesOfHorizontalGaps:Array[Short];
     private val blosumReader:BlosumReader;
-    private val fastaReader:FastaReade;
+    private val fastaReader:FastaReader;
     
 
     public def this(fastaName1:String, fastaName2:String, blosumFileName:String, openPanalty:Double, extensionPanalty:Double) {
@@ -116,8 +114,8 @@ public class SmithWaterman {
 
         //start from row 0
         for(j in b1 .. b2) {
-            i = a1
-            while((i <= a2) && (j >= b1)) {
+            i = a1;
+            while(i <= a2 && j >= b1) {
                 calculateScore(i, j);
                 i++;
                 j--;
@@ -171,8 +169,8 @@ public class SmithWaterman {
     public def getMaxScore():Double {
         var maxScore:Double = 0;
 
-        for(var i:Int in 1 .. length1) {
-            for(var j:Int in 1 .. length2) {
+        for(i in 1 .. length1) {
+            for(j in 1 .. length2) {
                 if(score(i, j) > maxScore) {
                     maxScore = score(i, j);
                 }
@@ -209,7 +207,7 @@ public class SmithWaterman {
                 else     break;             
             }
         }
-        var point = [i, j, num];
+        var point:Rail[Int] = [i, j, num];
         return point;
     }
 
