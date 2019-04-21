@@ -33,7 +33,7 @@ public class SmityWaterman {
     public def this(fasta1:Rail[String], fasta2:Rail[String]) {
         this.seq1 = FastaReader.readFastaFile(fasta1);
         this.seq2 = FastaReader.readFastaFile(fasta2);
-        this.blosumReader = new BlosumReader();
+        this.blosumReader = new BlosumReader('./BLOSUM62');
 
     }
 
