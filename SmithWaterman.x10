@@ -187,21 +187,21 @@ public class SmithWaterman {
         //find the direction to traceback
         while (true)
         {
-            if ((prevCells(i, j) & DR_LEFT) > 0) {
+            if ((prevCells(i, j) & DR_LEFT) > 0n) {
                 num ++;
-                if (score(i-1, j)>0) i--;
+                if (score(i-1n, j)>0n) i--;
                 else    break;              
             }
-            if ((prevCells(i, j) & DR_UP) > 0) {
+            if ((prevCells(i, j) & DR_UP) > 0n) {
                 num ++;
 //          return traceback(i, j-1);
-                if (score(i, j-1)>0) j--;
+                if (score(i, j-1n)>0n) j--;
                 else    break;              
             }
-            if ((prevCells(i, j) & DR_DIAG) > 0) {
+            if ((prevCells(i, j) & DR_DIAG) > 0n) {
                 num ++;
 //          return traceback(i-1, j-1);
-                if (score(i-1, j-1)>0) {i--;j--;}
+                if (score(i-1n, j-1n)>0n) {i--;j--;}
                 else     break;             
             }
         }
@@ -213,16 +213,16 @@ public class SmithWaterman {
 
         var matches:Int = 0n;
 
-        for(i in 1..length1) {
-            for(j in 1..length2) {
-                if(score(i, j) > SCORE_THRESHOLD && score(i, j) > score(i-1, j)
-                    && score(i, j) > score(i ,j-1) && score(i, j) > score(i-1, j-1))
+        for(i in 1n..length1) {
+            for(j in 1n..length2) {
+                if(score(i, j) > SCORE_THRESHOLD && score(i, j) > score(i-1n, j)
+                    && score(i, j) > score(i ,j-1n) && score(i, j) > score(i-1n, j-1n))
                 {
-                    if(i == length1 || j == length2 || score(i, j) > score(i+1, j+1))
+                    if(i == length1 || j == length2 || score(i, j) > score(i+1n, j+1n))
                     {
                         var endPoint:Rail[Int] = traceback(i, j);
 
-                        matches += endPoint(2);
+                        matches += endPoint(2n);
                     }
                 }
             }
@@ -241,11 +241,11 @@ public class SmithWaterman {
 
         val param = s.split(" ");
 
-        val fasta1:String = param(0);
-        val fasta2:String = param(1);
-        val match:String = param(2);
-        val openPanalty:Int = param(3) as Int;
-        val extPanalty:Int = param(4) as Int;
+        val fasta1:String = param(0n);
+        val fasta2:String = param(1n);
+        val match:String = param(2n);
+        val openPanalty:Int = param(3n) as Int;
+        val extPanalty:Int = param(4n) as Int;
 
         val sw:SmithWaterman = new SmithWaterman(fasta1, fasta2, match, openPanalty, extPanalty);
 
