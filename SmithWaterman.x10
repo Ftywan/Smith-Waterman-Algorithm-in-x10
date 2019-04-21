@@ -26,11 +26,11 @@ public class SmithWaterman {
     private var scoreUp:Array_2[Int];
 
     //similarity fuction constant
-    private val SCORE_THRESHOLD:Double = 19.9;
-    private val MATCH_SCORE:Double;
-    private val GAP_OPENING_PANALTY:Double;
-    private val GAP_EXTENSION_PANALTY:Double;
-    private val INDEL_SCORE:Double = -9;
+    private val SCORE_THRESHOLD:Int = 19.9;
+    private val MATCH_SCORE:Int;
+    private val GAP_OPENING_PANALTY:Int;
+    private val GAP_EXTENSION_PANALTY:Int;
+    private val INDEL_SCORE:Int = -9;
 
     //constant in direction matrix
     private val DR_LEFT:Int = 1n;// 0001
@@ -50,7 +50,7 @@ public class SmithWaterman {
     private val fastaReader:FastaReader;
     
 
-    public def this(fastaName1:String, fastaName2:String, blosumFileName:String, openPanalty:Double, extensionPanalty:Double) {
+    public def this(fastaName1:String, fastaName2:String, blosumFileName:String, openPanalty:Int, extensionPanalty:Int) {
         
         fastaReader = new FastaReader();
         this.blosumReader = new BlosumReader(blosumFileName);
@@ -131,19 +131,19 @@ public class SmithWaterman {
 
 
     public def calculateScore(var i:Int, var j:Int) {
-        var diagScore:Double = score(i-1, j-1) + similarity(i, j);
+        var diagScore:Int = score(i-1, j-1) + similarity(i, j);
 
-        var newOpenGapLeftScore:Double = score(i, j-1) - GAP_OPENING_PANALTY;
-        var newExtentionGapLeftScore:Double = scoreLeft(i, j-1) - GAP_EXTENSION_PANALTY;
+        var newOpenGapLeftScore:Int = score(i, j-1) - GAP_OPENING_PANALTY;
+        var newExtentionGapLeftScore:Int = scoreLeft(i, j-1) - GAP_EXTENSION_PANALTY;
         scoreLeft(i, j) = Math.max(newOpenGapLeftScore, newExtentionGapLeftScore);
 
-        var newOpenGapUpScore:Double = score(i-1, j) - GAP_OPENING_PANALTY;
-        var newExtentionGapUpScore:Double = scoreUp(i-1, j) - GAP_EXTENSION_PANALTY;
+        var newOpenGapUpScore:Int = score(i-1, j) - GAP_OPENING_PANALTY;
+        var newExtentionGapUpScore:Int = scoreUp(i-1, j) - GAP_EXTENSION_PANALTY;
         scoreUp(i, j) = Math.max(newOpenGapUpScore,newExtentionGapUpScore);
 
 
-        var upScore:Double = scoreUp(i, j-1);
-        var leftScore:Double = scoreLeft(i-1, j);
+        var upScore:Int = scoreUp(i, j-1);
+        var leftScore:Int = scoreLeft(i-1, j);
 
         score(i, j) = Math.max(diagScore, Math.max(upScore, Math.max(leftScore, 0)));
         prevCells(i, j) = 0;
@@ -162,8 +162,8 @@ public class SmithWaterman {
         }
     }
 
-    public def getMaxScore():Double {
-        var maxScore:Double = 0;
+    public def getMaxScore():Int {
+        var maxScore:Int = 0;
 
         for(i in 1 .. length1) {
             for(j in 1 .. length2) {
@@ -242,8 +242,8 @@ public class SmithWaterman {
         val fasta1:String = param(0);
         val fasta2:String = param(1);
         val match:String = param(2);
-        val openPanalty:Double = param(3) as Double;
-        val extPanalty:Double = param(4) as Double;
+        val openPanalty:Int = param(3) as Int;
+        val extPanalty:Int = param(4) as Int;
 
         val sw:SmithWaterman = new SmithWaterman(fasta1, fasta2, match, openPanalty, extPanalty);
 
