@@ -74,7 +74,7 @@ public class SmithWaterman {
     }
 
     private def similarity(i:Int, j:Int):Int {
-        return blosum62(seqToNum.get(seq1.charAt(i-1n)), seqToNum.get(seq2.charAt(j-1n)));
+        return blosum62(seqToNum.get(seq1.charAt(i-1n).toString()), seqToNum.get(seq2.charAt(j-1n).toString));
     }
 
     public def buildMatrix() {
@@ -235,8 +235,8 @@ public class SmithWaterman {
 
 
 
-    def main(argv: Array[String](1n)) {
-        x10.Console.OUT.println("Input the FASTA_FILE_1 FASTA_FILE_2 MATCH_FILE GAP_OPENING_PANALTY GAP_EXTENSION_PANALTY");
+    def main(argv: Rail[String]) {
+        Console.OUT.println("Input the FASTA_FILE_1 FASTA_FILE_2 MATCH_FILE GAP_OPENING_PANALTY GAP_EXTENSION_PANALTY");
         val s = x10.io.Console.IN.readLine();
 
         val param = s.split(" ");
