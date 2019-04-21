@@ -29,7 +29,6 @@ public class SmithWaterman {
 
     //similarity fuction constant
     private val SCORE_THRESHOLD:Int = 19n;
-    private val MATCH_SCORE:Int;
     private val GAP_OPENING_PANALTY:Int;
     private val GAP_EXTENSION_PANALTY:Int;
     private val INDEL_SCORE:Int = -9n;
@@ -233,7 +232,7 @@ public class SmithWaterman {
     }
 
     public def getTototalNumber():Int {
-        return 0;
+        return 0n;
     }
 
 
@@ -276,9 +275,9 @@ class FastaReader {
         val header:String = fastaReader.readLine();
         val builder:StringBuilder = new StringBuilder();
         var line:String = null;
-
-        while (true) {
-            line = fastaReader.readLine().trim();
+        var iterator:ReaderIterator<String> = fastaReader.lines();
+        while (iterator.hasNext()) {
+            line = iterator.next().trim();
             builder.add(line);
         }
         return builder.toString();
