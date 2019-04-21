@@ -22,8 +22,8 @@ public class SmithWaterman {
     //the score matrix
     private var score:Array_2[Double];
 
-    private var scoreFirst:Array_2[Double];
-    private var scoreContinue:Array_2[Double];
+    private var scoreLeft:Array_2[Double];
+    private var scoreUp:Array_2[Double];
 
     //similarity fuction constant
     private val SCORE_THRESHOLD:Double = 19.9;
@@ -37,6 +37,8 @@ public class SmithWaterman {
     private val DR_UP:Int = 2;// 0010
     private val DR_DIAG:Int = 4;// 0100
     private val DR_ZERO:Int = 8;// 1000
+
+
 
     //direction matrix
     private var prevCells:Array_2[Int];
@@ -66,8 +68,8 @@ public class SmithWaterman {
         this.GAP_EXTENSION_PANALTY = extensionPanalty;
 
         score = new Array_2(length1 + 1, length2 + 1);
-        scoreFirst = new Array_2(length1 + 1, length2 + 1);
-        scoreContinue = new Array_2(length1 + 1, length2 + 1);
+        scoreLeft = new Array_2(length1 + 1, length2 + 1);
+        scoreUp = new Array_2(length1 + 1, length2 + 1);
         prevCells = new Array_2(length1 + 1, length2 + 1);
 
         buildMatrix();
@@ -89,43 +91,85 @@ public class SmithWaterman {
 
         //base case
         score(0, 0) = 0;
+        scoreLeft(0, 0) = 0;
+        scoreUp(0, 0) = 0;
         prevCells(0,0) = DR_ZERO;
 
         //the first row
         for(i in 1..length1) {
             score(i, 0) = 0;
+            scoreLeft(i, 0) = 0;
+            scoreUp(i, 0) = 0;
             prevCells(i, 0) = DR_ZERO;
         }
 
         //the first column
         for(j in 1..length2) {
             score(0, j) = 0;
+            scoreLeft(0, j) = 0;
+            scoreUp(0, j) = 0;
             prevCells(0, j) = DR_ZERO;
         }
 
-        //rest of matrix
-        for(i in 1..length1) {
-            for(j in 1..length2) {
-                var diagScore:Double = score(i-1, j-1) + similarity(i, j);
-                var upScore:Double = score(i, j-1) +similarity(0, j);
-                var leftScore:Double = sore(i-1, j) + similarity(i, 0);
+        diagnalCover(1, 1, length1, length2);
 
-                score(i, j) = Math.max(diagScore, Math.max(upScore, Math.max(leftScore, 0)));
-                prevCells(i, j) = 0;
+    }
 
-                if (diagScore == score(i, j)) {
-                    prevCells(i, j) |= DR_DIAG;
-                }
-                if (leftScore == score(i, j)) {
-                    prevCells(i, j) |= DR_LEFT;
-                }
-                if (upScore == score(i, j)) {
-                    prevCells(i, j) |= DR_UP;
-                }
-                if (0 == score(i, j)]) {
-                    prevCells(i, j) |= DR_ZERO;
-                }
+    public def diagnalCover(var a1:Int, var b1:Int, var a2:Int, var b2:Int) {
+        var i:Int = a1;
+        var j:Int = b1;
+
+        //start from row 0
+        for(j in b1 .. b2) {
+            i = a1
+            while(i <= a2 && j >= b1) {
+                calculateScore(i, j);
+                i++;
+                j--;
             }
+        }
+
+        //continue from final col
+        for(i in a1+1 .. a2) {
+            j = b2;
+            while(i <=a2 && j >= b1) {
+                calculateScore(i, j);
+                i++;
+                j--;
+            }
+        }
+    }
+
+
+    public def calculateScore(var i:Int, var j:Int) {
+        var diagScore:Double = score(i-1, j-1) + similarity(i, j);
+
+        var newOpenGapLeftScore:Double = score(i, j-1) - GAP_OPENING_PANALTY;
+        var newExtentionGapLeftScore:Double = scoreLeft(i, j-1) - GAP_EXTENSION_PANALTY;
+        scoreLeft(i, j) = Math.max(newOpenGapLeftScore, newExtentionGapLeftScore);
+
+        var newOpenGapUpScore:Double = score(i-1, j) - GAP_OPENING_PANALTY;
+        var newExtentionGapUpScore:Double = scoreUp(i-1, j) - GAP_EXTENSION_PANALTY;
+        scoreUp(i, j) = Math.max(newOpenGapUpScore,newExtentionGapUpScore);
+
+
+        var upScore:Double = scoreUp(i, j-1);
+        var leftScore:Double = scoreLeft(i-1, j);
+
+        score(i, j) = Math.max(diagScore, Math.max(upScore, Math.max(leftScore, 0)));
+        prevCells(i, j) = 0;
+
+        if (diagScore == score(i, j)) {
+            prevCells(i, j) |= DR_DIAG;
+        }
+        if (leftScore == score(i, j)) {
+            prevCells(i, j) |= DR_LEFT;
+        }
+        if (upScore == score(i, j)) {
+            prevCells(i, j) |= DR_UP;
+        }
+        if (0 == score(i, j)]) {
+            prevCells(i, j) |= DR_ZERO;
         }
     }
 
