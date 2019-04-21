@@ -22,6 +22,9 @@ public class SmithWaterman {
     //the score matrix
     private var score:Array_2[Double];
 
+    private var scoreFirst:Array_2[Double];
+    private var scoreContinue:Array_2[Double];
+
     //similarity fuction constant
     private val SCORE_THRESHOLD:Double = 19.9;
     private val MATCH_SCORE:Double;
@@ -63,6 +66,8 @@ public class SmithWaterman {
         this.GAP_EXTENSION_PANALTY = extensionPanalty;
 
         score = new Array_2(length1 + 1, length2 + 1);
+        scoreFirst = new Array_2(length1 + 1, length2 + 1);
+        scoreContinue = new Array_2(length1 + 1, length2 + 1);
         prevCells = new Array_2(length1 + 1, length2 + 1);
 
         buildMatrix();
@@ -103,7 +108,7 @@ public class SmithWaterman {
             for(j in 1..length2) {
                 var diagScore:Double = score(i-1, j-1) + similarity(i, j);
                 var upScore:Double = score(i, j-1) +similarity(0, j);
-                var leftScore = sore(i-1, j) + similarity(i, 0);
+                var leftScore:Double = sore(i-1, j) + similarity(i, 0);
 
                 score(i, j) = Math.max(diagScore, Math.max(upScore, Math.max(leftScore, 0)));
                 prevCells(i, j) = 0;
@@ -193,7 +198,7 @@ public class SmithWaterman {
 
     }
 
-    
+
 
     def main(argv: Array[String](1)) {
         x10.Console.OUT.println("Input the FASTA_FILE_1 FASTA_FILE_2 MATCH_FILE GAP_OPENING_PANALTY GAP_EXTENSION_PANALTY");
