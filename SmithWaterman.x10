@@ -250,8 +250,23 @@ public class SmithWaterman {
         val openPanalty:Int = Int.parse(param(3n));
         val extPanalty:Int = Int.parse(param(4n));
 
+        val Console.OUT.println("IO debug");
+        val Console.OUT.println(fasta1);
+        val Console.OUT.println(fasta2);
+        val Console.OUT.println(match);
+        val Console.OUT.println(openPanalty);
+        val Console.OUT.println(extPanalty);
+
+
         val sw:SmithWaterman = new SmithWaterman(fasta1, fasta2, match, openPanalty, extPanalty);
         sw.buildMatrix();
+
+        val Console.OUT.println("IO debug");
+        val Console.OUT.println(sw.seq1);
+        val Console.OUT.println(sw.seq2);
+        val Console.OUT.println(sw.blosumFileName);
+        val Console.OUT.println(sw.GAP_OPENING_PANALTY);
+        val Console.OUT.println(sw.GAP_EXTENSION_PANALTY);
 
         Console.OUT.println("The max alignment score: ");
         Console.OUT.println(sw.getMaxScore());
