@@ -76,7 +76,12 @@ public class SmithWaterman {
     }
 
     public def similarity(i:Int, j:Int):Int {
-        return blosum62(seqToNum.get(seq1.charAt(i-1n)), seqToNum.get(seq2.charAt(j-1n)));
+        //return blosum62(seqToNum.get(seq1.charAt(i-1n)), seqToNum.get(seq2.charAt(j-1n)));
+        if (eqToNum.get(seq1.charAt(i-1n)) == seqToNum.get(seq2.charAt(j-1n))) {
+            return 5;
+        } else {
+            return 0;
+        }
     }
 
     public def buildMatrix() {
@@ -149,7 +154,8 @@ public class SmithWaterman {
         var upScore:Int = scoreUp(i, j-1);
         var leftScore:Int = scoreLeft(i-1, j);
 
-        score(i, j) = Math.max(diagScore, Math.max(upScore, Math.max(leftScore, 0n)));
+        //score(i, j) = Math.max(diagScore, Math.max(upScore, Math.max(leftScore, 0n)));
+        score(i, j) = Math.max(diagScore, Math.max(upScore, leftScore));
         prevCells(i, j) = 0n;
 
         if (diagScore == score(i, j)) {
@@ -161,9 +167,11 @@ public class SmithWaterman {
         if (upScore == score(i, j)) {
             prevCells(i, j) |= DR_UP;
         }
+        /*
         if (0n == score(i, j)) {
             prevCells(i, j) |= DR_ZERO;
         }
+        */
     }
 
     public def getMaxScore():Int {
