@@ -95,8 +95,8 @@ public class SmithWatermanParallalTaskDAGBlockwise {
 
         //this.NUM_ROWS_IN_BLOCK = Math.ceil((this.length1 as Double) / this.NUM_BLOCKS_X) as Int;
         //this.NUM_BLOCKS_Y = Math.ceil((this.length2 as Double) / this.NUM_BLOCKS_Y) as Int;
-        this.NUM_BLOCKS_X = Math.ceil((this.length1 as Double) / this.NUM_BLOCKS_X) as Int;
-        this.NUM_BLOCKS_Y = Math.ceil((this.length2 as Double) / this.NUM_BLOCKS_Y) as Int;
+        this.NUM_BLOCKS_X = Math.ceil((this.length1 as Double) / this.NUM_ROWS_IN_BLOCK) as Int;
+        this.NUM_BLOCKS_Y = Math.ceil((this.length2 as Double) / this.NUM_COLS_IN_BLOCK) as Int;
         this.finishStatus = new Array_2[Int](NUM_BLOCKS_X + 2, NUM_BLOCKS_Y + 2);
 
         //for (i in 0..(NUM_BLOCKS_X - 1)) {
