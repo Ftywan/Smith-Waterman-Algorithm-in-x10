@@ -25,6 +25,7 @@ public class SmithWatermanParallalBlockwise {
     private val NUM_BLOCKS_X:Int = Runtime.NTHREADS;
     private val NUM_BLOCKS_Y:Int;
 
+    //Array keep track of how many dependencies have cleared.
     private var finishStatus:Array_2[Int];
 
     //two sequences of AA
@@ -33,9 +34,11 @@ public class SmithWatermanParallalBlockwise {
     private val length1:Int;
     private val length2:Int;
 
+    //The coordinate of the max score.
     private var maxi:Int;
     private var maxj:Int;
 
+    //Char array for the output string.
     private var outstr1arr:Rail[Char];
     private var outstr2arr:Rail[Char];
     private var lengthOut:Int;
@@ -69,7 +72,15 @@ public class SmithWatermanParallalBlockwise {
     private val blosumReader:BlosumReader;
     private val fastaReader:FastaReader;
     
-
+    /**
+        The constructor. Initialize the variables.
+        args: 
+            fastaName1: the name of first fasta file.
+            fastaName2: the name of second fasta file.
+            blosumFileName: the name of blosum file.
+            openPanalty: The gap open panalty.
+            extensionPanalty: The gap extension panalty.
+    */
     public def this(fastaName1:String, fastaName2:String, blosumFileName:String, openPanalty:Int, extensionPanalty:Int) {
         
         fastaReader = new FastaReader();
@@ -103,8 +114,10 @@ public class SmithWatermanParallalBlockwise {
         }
     }
 
+    /**
+        Calculate the similarity score from BLOSUM file at position i, j
+    */
     public def similarity(i:Int, j:Int):Int {
-        //return blosum62(seqToNum.get(seq1.charAt(i-1n)), seqToNum.get(seq2.charAt(j-1n)));
         var char1:Char = seq1.charAt(i-1n);
         var char2:Char = seq2.charAt(j-1n);
         if (seqToNum.containsKey(char1)) {
@@ -122,16 +135,16 @@ public class SmithWatermanParallalBlockwise {
         }
     }
 
+    /**
+        Build the score matrix for traceback.
+    */
     public def buildMatrix() {
-
         var max:Int = -99999999n;
         var maxi:Int = -1n;
         var maxj:Int = -1n;
 
         //base case
         score(0, 0) = 0n;
-        //scoreLeft(0, 0) = -9999990n;
-        //scoreLeft(0, 0) = -9999990n;
         scoreLeft(0, 0) = 0n;
         scoreLeft(0, 0) = 0n;
         prevCells(0,0) = DR_ZERO;
@@ -139,8 +152,6 @@ public class SmithWatermanParallalBlockwise {
         //the first row
         for(i in 1..length1) {
             score(i, 0) = 0n;
-            //scoreLeft(i, 0) = -9999990n;
-            //scoreUp(i, 0) = -9999990n;
             scoreLeft(i, 0) = 0n;
             scoreUp(i, 0) = 0n;
             prevCells(i, 0) = DR_ZERO;
@@ -149,16 +160,14 @@ public class SmithWatermanParallalBlockwise {
         //the first column
         for(j in 1..length2) {
             score(0, j) = 0n;
-            //scoreLeft(0, j) = -9999990n;
-            //scoreUp(0, j) = -9999990n;
             scoreLeft(0, j) = 0n;
             scoreUp(0, j) = 0n;
             prevCells(0, j) = DR_ZERO;
         }
 
+        // Spawn worker threads, each thread take some rows to calculate
         finish for (i in 0n..(this.NUM_BLOCKS_X - 1n)) async {
                 var maxResult:Rail[Int] = workerThread(i);
-                //Console.OUT.println(i + " returned.");
                 if (maxResult(2n) > max) {
                     max = maxResult(2n);
                     maxi = maxResult(0n);
@@ -166,17 +175,18 @@ public class SmithWatermanParallalBlockwise {
                 }
         }
 
-        //var point:Rail[Int] = diagnalCover(1n, 1n, length1, length2);
-
         this.maxi = maxi;
         this.maxj = maxj;
     }
 
+    /**
+        Worker thread, each thread take some rows.
+    */
     public def workerThread(var id:Int):Rail[Int] {
-        //Console.OUT.println(id + " started.");
         var max:Int = -99999999n;
         var maxi:Int = -1n;
         var maxj:Int = -1n;
+        //The first thread do not depend on others
         if (id == 0n) {
             for (i in 0n..(this.NUM_BLOCKS_Y - 1n)) {
                 var points:Rail[Int] = getBlockPosition(id, i);
@@ -186,13 +196,12 @@ public class SmithWatermanParallalBlockwise {
                     maxi = maxResult(0n);
                     maxj = maxResult(1n);
                 }
+                // signal to the next thread
                 this.finishStatus(id, i) = 1n;
-                //Console.OUT.println(id + " " + i + " finished");
             }
         } else {
-            //Console.OUT.println(id + " ready");
             for (i in 0n..(this.NUM_BLOCKS_Y - 1n)) {
-                //Console.OUT.println(id + " " + i + " waiting");
+                // busy waiting until the dependent block is calculated
                 while (this.finishStatus(id -1n, i) != 1n) {}
                 var points:Rail[Int] = getBlockPosition(id, i);
                 var maxResult:Rail[Int] = diagnalCover(points(0n), points(1n), points(2n), points(3n));
@@ -201,27 +210,25 @@ public class SmithWatermanParallalBlockwise {
                     maxi = maxResult(0n);
                     maxj = maxResult(1n);
                 }
+                // signal to the next thread
                 this.finishStatus(id, i) = 1n;
-                //Console.OUT.println(id + " " + i + " finished");
             }
         }
         var point:Rail[Int] = [maxi, maxj, max];
         return point;
     }
 
-    def getBlockPosition(var i:Int, var j:Int):Rail[Int] {
+    /**
+        Helper function, calculate the range of the block based on block ID.
+    */
+    private def getBlockPosition(var i:Int, var j:Int):Rail[Int] {
 
         var position:Rail[Int];
 
         //divide the score matrix to blocks
         //get the num of blocks
         //size of the martix is (length+1n)(length2+1n)
-        /*
-        var numOfBlocksInHight = length1 / NUM_ROWS_IN_BLOCK + 1n;
-        var numOfBlocksInWidth = length2 / NUM_COLS_IN_BLOCK + 1n;
-        */
 
-        //get the final position
         var leftI:Int;
         var leftJ:Int;
         var rightI:Int;
@@ -249,7 +256,10 @@ public class SmithWatermanParallalBlockwise {
         return position;
     }
 
-    public def diagnalCover(var a1:Int, var b1:Int, var a2:Int, var b2:Int):Rail[Int] {
+    /**
+        The helper function to calculate a range from (a1, b1) to (a2, b2).
+    */
+    private def diagnalCover(var a1:Int, var b1:Int, var a2:Int, var b2:Int):Rail[Int] {
         var max:Int = -99999999n;
         var maxi:Int = -1n;
         var maxj:Int = -1n;
@@ -291,11 +301,11 @@ public class SmithWatermanParallalBlockwise {
         return point;
     }
 
-
-    public def calculateScore(var i:Int, var j:Int):Int {
-        //Console.OUT.println(i + " " + j);
+    /**
+        Helper function, to calculate a cell with index i, j
+    */
+    private def calculateScore(var i:Int, var j:Int):Int {
         var diagScore:Int = score(i-1, j-1) + similarity(i, j);
-        //Console.OUT.println("dig:" + score(i-1, j-1) + " simi:" + similarity(i, j));
 
         var newOpenGapLeftScore:Int = score(i, j-1) - GAP_OPENING_PANALTY;
         var newExtentionGapLeftScore:Int = scoreLeft(i, j-1) - GAP_EXTENSION_PANALTY;
@@ -308,10 +318,7 @@ public class SmithWatermanParallalBlockwise {
 
         var upScore:Int = scoreUp(i, j);
         var leftScore:Int = scoreLeft(i, j);
-        //var leftScore:Int = scoreUp(i, j);
-        //var upScore:Int = scoreLeft(i, j);
 
-        //score(i, j) = Math.max(diagScore, Math.max(upScore, Math.max(leftScore, 0n)));
         score(i, j) = Math.max(diagScore, Math.max(upScore, Math.max(leftScore, 0n)));
         prevCells(i, j) = 0n;
 
@@ -324,28 +331,20 @@ public class SmithWatermanParallalBlockwise {
         } else if (0n == score(i, j)) {
             prevCells(i, j) |= DR_ZERO;
         }
-        //Console.OUT.println("final:" + score(i, j));
         return score(i, j);
     }
 
+    /**
+        Get the max match score. This function must be called after buildMatrix()
+    */
     public def getMaxScore():Int {
         var maxScore:Int = this.score(maxi, maxj);
-        /*
-        for(i in 1 .. length1) {
-            for(j in 1 .. length2) {
-                if(score(i, j) > maxScore) {
-                    maxScore = score(i, j);
-                }
-            }
-        }
-        */
         return maxScore;
     }
 
-
-    // TODO: printAlignments()
-
-    //returns the end point of tracing back (the top left cell) and the number of matches
+    /**
+        Traceback and fill in the best alignment details.
+    */    
     public def traceback(var i:Int, var j:Int):Rail[Int] {
         var num:Int = 0n;
         var match:Int = 0n;
@@ -357,7 +356,6 @@ public class SmithWatermanParallalBlockwise {
         var str2len:Int = 0n;
         this.outstr1arr = new Rail[Char](Math.max(length1, length2)*2);
         this.outstr2arr = new Rail[Char](Math.max(length1, length2)*2);
-        //find the direction to traceback
         while (true)
         {
             if ((prevCells(i, j) & DR_LEFT) > 0n) {
@@ -368,8 +366,6 @@ public class SmithWatermanParallalBlockwise {
                 traceSTR2(str2len) = seq2.charAt(j-1n);
                 str2len ++;
                 j--;
-                //if (score(i-1n, j)>0n) i--;
-                //else    break;              
             } else if ((prevCells(i, j) & DR_UP) > 0n) {
                 num ++;
                 gap ++;
@@ -378,9 +374,6 @@ public class SmithWatermanParallalBlockwise {
                 traceSTR2(str2len) = '-';
                 str2len ++;
                 i--;
-//          return traceback(i, j-1);
-                //if (score(i, j-1n)>0n) j--;
-                //else    break;              
             } else if ((prevCells(i, j) & DR_DIAG) > 0n) {
                 if (seq1.charAt(i-1n) == seq2.charAt(j-1n)) {
                     identity ++;
@@ -393,9 +386,6 @@ public class SmithWatermanParallalBlockwise {
                 str2len ++;
                 j--;
                 i--;
-//          return traceback(i-1, j-1);
-                //if (score(i-1n, j-1n)>0n) {i--;j--;}
-                //else     break;             
             } else {
                 break;
             }
@@ -423,60 +413,9 @@ public class SmithWatermanParallalBlockwise {
         }
     }
 
-    public def getMatchNumber():Int {
-
-        var matches:Int = 0n;
-
-        for(i in 1n..length1) {
-            for(j in 1n..length2) {
-                if(score(i, j) > SCORE_THRESHOLD && score(i, j) > score(i-1n, j)
-                    && score(i, j) > score(i ,j-1n) && score(i, j) > score(i-1n, j-1n))
-                {
-                    if(i == length1 || j == length2 || score(i, j) > score(i+1n, j+1n))
-                    {
-                        var endPoint:Rail[Int] = traceback(i, j);
-
-                        matches += endPoint(2n);
-                    }
-                }
-            }
-        }
-        return matches;
-    }
-
-    public def getMatchGap():Rail[Int] {
-        /*
-        var max:Int = 0n;
-        var maxJ:Int = 0n;
-        for(j in 1n..length2) {
-            if (score(length1, j) > max) {
-                max = score(length1, j);
-                maxJ = j;
-            } 
-        }
-        */
-        //var endPoint:Rail[Int] = traceback(length1, maxJ);
-        var endPoint:Rail[Int] = traceback(this.maxi, this.maxj);
-        var result:Rail[Int] = [endPoint(3n), endPoint(4n), endPoint(5n), endPoint(2n)];
-        return result;
-    }
-
-    public def getTototalNumber():Int {
-        return 0n;
-    }
-
-    public def getGapNumber():Int {
-        return 0n;
-    }
-
-    public def printAlignments() {
-
-    }
-
-    public def gettotalScore():Int {
-        return 0n;
-    }
-
+    /**
+        Print out the matrix. For debugging only.
+    */
     public def printMatrix() {
         for (i in 1..length1) {
             for (j in 1..length2) {
@@ -503,8 +442,6 @@ public class SmithWatermanParallalBlockwise {
 
     public static def main(argv: Rail[String]) {
         Console.OUT.println("Input the FASTA_FILE_1 FASTA_FILE_2 MATCH_FILE GAP_OPENING_PANALTY GAP_EXTENSION_PANALTY");
-        //Console.OUT.println(Runtime.NTHREADS);
-        //Console.OUT.println(Runtime.MAX_THREADS);
         val s = x10.io.Console.IN.readLine();
 
         val param = s.split(" ");
@@ -518,14 +455,7 @@ public class SmithWatermanParallalBlockwise {
 
         val sw:SmithWatermanParallalBlockwise = new SmithWatermanParallalBlockwise(fasta1, fasta2, match, openPanalty, extPanalty);
         sw.buildMatrix();
-        //sw.printMatrix();
 
-        //Console.OUT.println("IO debug");
-        //Console.OUT.println(sw.seq1);
-        //Console.OUT.println(sw.seq2);
-        //Console.OUT.println(sw.blosumFileName);
-        //Console.OUT.println(sw.GAP_OPENING_PANALTY);
-        //Console.OUT.println(sw.GAP_EXTENSION_PANALTY);
         var result:Rail[Int] = sw.getMatchGap();
 
         Console.OUT.println("Identity: " + result(2) + "/" + result(3) + " (" + ((result(2) as Double)/ result(3)) + ")");
@@ -546,12 +476,9 @@ public class SmithWatermanParallalBlockwise {
 
 }
 
-
-
-
-
-
-
+/**
+    Helper class handle IO
+*/
 class FastaReader {
     public static def readFastaFile(fastaFileName:String):String {
         val fastaFile:File = new File(fastaFileName);
@@ -570,6 +497,9 @@ class FastaReader {
     } 
 }
 
+/**
+    Helper class handle IO
+*/
 class BlosumReader {
     public var BLOSUM62: Array_2[Int];
     private var SeqToNum: HashMap[Char, Int];

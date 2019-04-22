@@ -19,12 +19,14 @@ import x10.xrx.Runtime;
 
 public class SmithWatermanParallalTaskDAG {
 
-    private val NUM_COLS_IN_BLOCK:Int = 1n;
-    private val NUM_ROWS_IN_BLOCK:Int = 1n;
+    //Parameters, indicate the size of each block. Need to be n in this case. 
+    private val NUM_COLS_IN_BLOCK:Int = 1n; // do not change
+    private val NUM_ROWS_IN_BLOCK:Int = 1n; // do not change
 
     private val NUM_BLOCKS_X:Int;
     private val NUM_BLOCKS_Y:Int;
 
+    //Array keep track of how many dependencies have cleared.
     private var finishStatus:Array_2[Int];
 
     //two sequences of AA
@@ -33,9 +35,11 @@ public class SmithWatermanParallalTaskDAG {
     private val length1:Int;
     private val length2:Int;
 
+    //The coordinate of the max score.
     private var maxi:Int;
     private var maxj:Int;
 
+    //Char array for the output string.
     private var outstr1arr:Rail[Char];
     private var outstr2arr:Rail[Char];
     private var lengthOut:Int;
@@ -69,7 +73,15 @@ public class SmithWatermanParallalTaskDAG {
     private val blosumReader:BlosumReader;
     private val fastaReader:FastaReader;
     
-
+    /**
+        The constructor. Initialize the variables.
+        args: 
+            fastaName1: the name of first fasta file.
+            fastaName2: the name of second fasta file.
+            blosumFileName: the name of blosum file.
+            openPanalty: The gap open panalty.
+            extensionPanalty: The gap extension panalty.
+    */
     public def this(fastaName1:String, fastaName2:String, blosumFileName:String, openPanalty:Int, extensionPanalty:Int) {
         
         fastaReader = new FastaReader();
@@ -83,8 +95,6 @@ public class SmithWatermanParallalTaskDAG {
         this.length1 = seq1.length();
         this.length2 = seq2.length();
 
-        //Console.OUT.println(length1);
-
         this.GAP_OPENING_PANALTY = openPanalty;
         this.GAP_EXTENSION_PANALTY = extensionPanalty;
 
@@ -93,27 +103,21 @@ public class SmithWatermanParallalTaskDAG {
         scoreUp = new Array_2[Int](length1 + 1, length2 + 1);
         prevCells = new Array_2[Int](length1 + 1, length2 + 1);
 
-        //this.NUM_ROWS_IN_BLOCK = Math.ceil((this.length1 as Double) / this.NUM_BLOCKS_X) as Int;
-        //this.NUM_BLOCKS_Y = Math.ceil((this.length2 as Double) / this.NUM_BLOCKS_Y) as Int;
         this.NUM_BLOCKS_X = length1 + 1n;
         this.NUM_BLOCKS_Y = length2 + 1n;
         this.finishStatus = new Array_2[Int](NUM_BLOCKS_X + 2, NUM_BLOCKS_Y + 2);
 
-        //for (i in 0..(NUM_BLOCKS_X - 1)) {
-        //    for (j in 0..(NUM_BLOCKS_Y -1 )) {
-        //        finishStatus(i, j) = 0n;
-        //    }
-        //}
-
+        // Initialize the first row and column of finish status array to 2
         for (i in 2..(NUM_BLOCKS_X - 1)) {
             finishStatus(1, i) = 2n;
             finishStatus(i, 1) = 2n;
         }
-        //Console.OUT.println("hi");
     }
 
+    /**
+        Calculate the similarity score from BLOSUM file at position i, j
+    */
     public def similarity(i:Int, j:Int):Int {
-        //return blosum62(seqToNum.get(seq1.charAt(i-1n)), seqToNum.get(seq2.charAt(j-1n)));
         var char1:Char = seq1.charAt(i-1n);
         var char2:Char = seq2.charAt(j-1n);
         if (seqToNum.containsKey(char1)) {
@@ -131,9 +135,10 @@ public class SmithWatermanParallalTaskDAG {
         }
     }
 
+    /**
+        Build the score matrix for traceback.
+    */
     public def buildMatrix() {
-
-
         //base case
         score(0, 0) = 0n;
         scoreLeft(0, 0) = -9999990n;
@@ -157,8 +162,6 @@ public class SmithWatermanParallalTaskDAG {
         }
 
         var point:Rail[Int] = workerThread(1n, 1n);
-
-        //var point:Rail[Int] = diagnalCover(1n, 1n, length1, length2);
 
         this.maxi = point(0);
         this.maxj = point(1);
@@ -240,8 +243,11 @@ public class SmithWatermanParallalTaskDAG {
         var point:Rail[Int] = [maxi, maxj, max];
         return point;
     }
-
-    public def diagnalCover(var a1:Int, var b1:Int, var a2:Int, var b2:Int):Rail[Int] {
+    
+    /**
+        The helper function to calculate a range from (a1, b1) to (a2, b2).
+    */
+    private def diagnalCover(var a1:Int, var b1:Int, var a2:Int, var b2:Int):Rail[Int] {
         var max:Int = -99999999n;
         var maxi:Int = -1n;
         var maxj:Int = -1n;
@@ -283,11 +289,12 @@ public class SmithWatermanParallalTaskDAG {
         return point;
     }
 
-
-    public def calculateScore(var i:Int, var j:Int):Int {
+    /**
+        Helper function, to calculate a cell with index i, j
+    */
+    private def calculateScore(var i:Int, var j:Int):Int {
         //Console.OUT.println(i + " " + j);
         var diagScore:Int = score(i-1, j-1) + similarity(i, j);
-        //Console.OUT.println("dig:" + score(i-1, j-1) + " simi:" + similarity(i, j));
 
         var newOpenGapLeftScore:Int = score(i, j-1) - GAP_OPENING_PANALTY;
         var newExtentionGapLeftScore:Int = scoreLeft(i, j-1) - GAP_EXTENSION_PANALTY;
@@ -301,7 +308,6 @@ public class SmithWatermanParallalTaskDAG {
         var upScore:Int = scoreUp(i, j);
         var leftScore:Int = scoreLeft(i, j);
 
-        //score(i, j) = Math.max(diagScore, Math.max(upScore, Math.max(leftScore, 0n)));
         score(i, j) = Math.max(diagScore, Math.max(upScore, Math.max(leftScore, 0n)));
         prevCells(i, j) = 0n;
 
@@ -314,28 +320,20 @@ public class SmithWatermanParallalTaskDAG {
         } else if (0n == score(i, j)) {
             prevCells(i, j) |= DR_ZERO;
         }
-        //Console.OUT.println("final:" + score(i, j));
         return score(i, j);
     }
 
+    /**
+        Get the max match score. This function must be called after buildMatrix()
+    */
     public def getMaxScore():Int {
         var maxScore:Int = this.score(maxi, maxj);
-        /*
-        for(i in 1 .. length1) {
-            for(j in 1 .. length2) {
-                if(score(i, j) > maxScore) {
-                    maxScore = score(i, j);
-                }
-            }
-        }
-        */
         return maxScore;
     }
 
-
-    // TODO: printAlignments()
-
-    //returns the end point of tracing back (the top left cell) and the number of matches
+    /**
+        Traceback and fill in the best alignment details.
+    */    
     public def traceback(var i:Int, var j:Int):Rail[Int] {
         var num:Int = 0n;
         var match:Int = 0n;
@@ -347,7 +345,6 @@ public class SmithWatermanParallalTaskDAG {
         var str2len:Int = 0n;
         this.outstr1arr = new Rail[Char](Math.max(length1, length2)*2);
         this.outstr2arr = new Rail[Char](Math.max(length1, length2)*2);
-        //find the direction to traceback
         while (true)
         {
             if ((prevCells(i, j) & DR_LEFT) > 0n) {
@@ -358,8 +355,6 @@ public class SmithWatermanParallalTaskDAG {
                 traceSTR2(str2len) = seq2.charAt(j-1n);
                 str2len ++;
                 j--;
-                //if (score(i-1n, j)>0n) i--;
-                //else    break;              
             } else if ((prevCells(i, j) & DR_UP) > 0n) {
                 num ++;
                 gap ++;
@@ -368,9 +363,6 @@ public class SmithWatermanParallalTaskDAG {
                 traceSTR2(str2len) = '-';
                 str2len ++;
                 i--;
-//          return traceback(i, j-1);
-                //if (score(i, j-1n)>0n) j--;
-                //else    break;              
             } else if ((prevCells(i, j) & DR_DIAG) > 0n) {
                 if (seq1.charAt(i-1n) == seq2.charAt(j-1n)) {
                     identity ++;
@@ -383,9 +375,6 @@ public class SmithWatermanParallalTaskDAG {
                 str2len ++;
                 j--;
                 i--;
-//          return traceback(i-1, j-1);
-                //if (score(i-1n, j-1n)>0n) {i--;j--;}
-                //else     break;             
             } else {
                 break;
             }
@@ -413,60 +402,9 @@ public class SmithWatermanParallalTaskDAG {
         }
     }
 
-    public def getMatchNumber():Int {
-
-        var matches:Int = 0n;
-
-        for(i in 1n..length1) {
-            for(j in 1n..length2) {
-                if(score(i, j) > SCORE_THRESHOLD && score(i, j) > score(i-1n, j)
-                    && score(i, j) > score(i ,j-1n) && score(i, j) > score(i-1n, j-1n))
-                {
-                    if(i == length1 || j == length2 || score(i, j) > score(i+1n, j+1n))
-                    {
-                        var endPoint:Rail[Int] = traceback(i, j);
-
-                        matches += endPoint(2n);
-                    }
-                }
-            }
-        }
-        return matches;
-    }
-
-    public def getMatchGap():Rail[Int] {
-        /*
-        var max:Int = 0n;
-        var maxJ:Int = 0n;
-        for(j in 1n..length2) {
-            if (score(length1, j) > max) {
-                max = score(length1, j);
-                maxJ = j;
-            } 
-        }
-        */
-        //var endPoint:Rail[Int] = traceback(length1, maxJ);
-        var endPoint:Rail[Int] = traceback(this.maxi, this.maxj);
-        var result:Rail[Int] = [endPoint(3n), endPoint(4n), endPoint(5n), endPoint(2n)];
-        return result;
-    }
-
-    public def getTototalNumber():Int {
-        return 0n;
-    }
-
-    public def getGapNumber():Int {
-        return 0n;
-    }
-
-    public def printAlignments() {
-
-    }
-
-    public def gettotalScore():Int {
-        return 0n;
-    }
-
+    /**
+        Print out the matrix. For debugging only.
+    */
     public def printMatrix() {
         for (i in 1..length1) {
             for (j in 1..length2) {
@@ -493,8 +431,7 @@ public class SmithWatermanParallalTaskDAG {
 
     public static def main(argv: Rail[String]) {
         Console.OUT.println("Input the FASTA_FILE_1 FASTA_FILE_2 MATCH_FILE GAP_OPENING_PANALTY GAP_EXTENSION_PANALTY");
-        //Console.OUT.println(Runtime.NTHREADS);
-        //Console.OUT.println(Runtime.MAX_THREADS);
+
         val s = x10.io.Console.IN.readLine();
 
         val param = s.split(" ");
@@ -508,14 +445,7 @@ public class SmithWatermanParallalTaskDAG {
 
         val sw:SmithWatermanParallalTaskDAG = new SmithWatermanParallalTaskDAG(fasta1, fasta2, match, openPanalty, extPanalty);
         sw.buildMatrix();
-        //sw.printMatrix();
 
-        //Console.OUT.println("IO debug");
-        //Console.OUT.println(sw.seq1);
-        //Console.OUT.println(sw.seq2);
-        //Console.OUT.println(sw.blosumFileName);
-        //Console.OUT.println(sw.GAP_OPENING_PANALTY);
-        //Console.OUT.println(sw.GAP_EXTENSION_PANALTY);
         var result:Rail[Int] = sw.getMatchGap();
 
         Console.OUT.println("Identity: " + result(2) + "/" + result(3) + " (" + ((result(2) as Double)/ result(3)) + ")");
@@ -536,12 +466,9 @@ public class SmithWatermanParallalTaskDAG {
 
 }
 
-
-
-
-
-
-
+/**
+    Helper class handle IO
+*/
 class FastaReader {
     public static def readFastaFile(fastaFileName:String):String {
         val fastaFile:File = new File(fastaFileName);
@@ -560,6 +487,9 @@ class FastaReader {
     } 
 }
 
+/**
+    Helper class handle IO
+*/
 class BlosumReader {
     public var BLOSUM62: Array_2[Int];
     private var SeqToNum: HashMap[Char, Int];
