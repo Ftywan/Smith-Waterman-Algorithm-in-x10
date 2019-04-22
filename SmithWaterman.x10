@@ -265,7 +265,7 @@ public class SmithWaterman {
         Console.OUT.println("IO debug");
         Console.OUT.println(sw.seq1);
         Console.OUT.println(sw.seq2);
-        Console.OUT.println(sw.blosumFileName);
+        //Console.OUT.println(sw.blosumFileName);
         Console.OUT.println(sw.GAP_OPENING_PANALTY);
         Console.OUT.println(sw.GAP_EXTENSION_PANALTY);
 
