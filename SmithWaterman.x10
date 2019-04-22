@@ -177,6 +177,7 @@ public class SmithWaterman {
     public def calculateScore(var i:Int, var j:Int):Int {
         Console.OUT.println(i + " " + j);
         var diagScore:Int = score(i-1, j-1) + similarity(i, j);
+        Console.OUT.println("dig:" + score(i-1, j-1) + " simi:" + similarity(i, j));
 
         var newOpenGapLeftScore:Int = score(i, j-1) - GAP_OPENING_PANALTY - GAP_EXTENSION_PANALTY;
         var newExtentionGapLeftScore:Int = scoreLeft(i, j-1) - GAP_EXTENSION_PANALTY;
