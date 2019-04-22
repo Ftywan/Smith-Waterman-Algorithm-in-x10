@@ -343,9 +343,10 @@ class FastaReader {
         var line:String = null;
         var iterator:ReaderIterator[String] = fastaReader.lines();
         while (iterator.hasNext()) {
-            line = iterator.next().trim();
-            builder.add(line);
+            line = iterator.next();
             Console.OUT.println(line);
+            line = line.trim();
+            builder.add(line);
         }
         return builder.toString();
     } 
