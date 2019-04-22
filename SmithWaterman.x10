@@ -19,8 +19,8 @@ public class SmithWaterman {
     //two sequences of AA
     private val seq1:String;
     private val seq2:String;
-    private val length1:Int;
-    private val length2:Int;
+    val length1:Int;
+    val length2:Int;
 
     private val maxi:Int;
     private val maxj:Int;
@@ -133,9 +133,9 @@ public class SmithWaterman {
 
     public def diagnalCover(var a1:Int, var b1:Int, var a2:Int, var b2:Int):Rail[Int] {
         var max:Int = -99999999n;
-        var maxi:Int = -1;
-        var maxj:Int = -1;
-        var temp:Int = -1;
+        var maxi:Int = -1n;
+        var maxj:Int = -1n;
+        var temp:Int = -1n;
         //start from row 0
         for(j in b1 .. b2) {
             var i:Int = a1;
