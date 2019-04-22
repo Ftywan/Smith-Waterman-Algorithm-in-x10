@@ -19,8 +19,8 @@ import x10.xrx.Runtime;
 
 public class SmithWatermanParallalTaskDAGBlockwise {
 
-    private val NUM_COLS_IN_BLOCK:Int = 32;
-    private val NUM_ROWS_IN_BLOCK:Int = 32;
+    private val NUM_COLS_IN_BLOCK:Int = 32n;
+    private val NUM_ROWS_IN_BLOCK:Int = 32n;
 
     private val NUM_BLOCKS_X:Int;
     private val NUM_BLOCKS_Y:Int;
@@ -95,8 +95,8 @@ public class SmithWatermanParallalTaskDAGBlockwise {
 
         //this.NUM_ROWS_IN_BLOCK = Math.ceil((this.length1 as Double) / this.NUM_BLOCKS_X) as Int;
         //this.NUM_BLOCKS_Y = Math.ceil((this.length2 as Double) / this.NUM_BLOCKS_Y) as Int;
-        this.NUM_BLOCKS_X = Math.ceil((this.length1 as Double) / this.NUM_BLOCKS_X) as Int;
-        this.NUM_BLOCKS_Y = Math.ceil((this.length2 as Double) / this.NUM_BLOCKS_Y) as Int;
+        this.NUM_BLOCKS_X = Math.ceil((this.length1 as Double) / this.NUM_ROWS_IN_BLOCK) as Int;
+        this.NUM_BLOCKS_Y = Math.ceil((this.length2 as Double) / this.NUM_COLS_IN_BLOCK) as Int;
         this.finishStatus = new Array_2[Int](NUM_BLOCKS_X + 2, NUM_BLOCKS_Y + 2);
 
         //for (i in 0..(NUM_BLOCKS_X - 1)) {
@@ -105,9 +105,9 @@ public class SmithWatermanParallalTaskDAGBlockwise {
         //    }
         //}
 
-        for (i in 2..(NUM_BLOCKS_X - 1)) {
-            finishStatus(1, i) = 2n;
-            finishStatus(i, 1) = 2n;
+        for (i in 1..(NUM_BLOCKS_X - 1)) {
+            finishStatus(0, i) = 2n;
+            finishStatus(i, 0) = 2n;
         }
         //Console.OUT.println("hi");
     }
@@ -156,7 +156,7 @@ public class SmithWatermanParallalTaskDAGBlockwise {
             prevCells(0, j) = DR_ZERO;
         }
 
-        var point:Rail[Int] = workerThread(1n, 1n);
+        var point:Rail[Int] = workerThread(0n, 0n);
 
         //var point:Rail[Int] = diagnalCover(1n, 1n, length1, length2);
 
@@ -206,16 +206,19 @@ public class SmithWatermanParallalTaskDAGBlockwise {
 
     public def workerThread(var i:Int, var j:Int):Rail[Int] {
         //Console.OUT.print("");
-        var points:Rail[Int]
-        var result:Rail[Int] = 
-        var myval:Int = calculateScore(i, j);
         var max:Int = -999999n; 
         var maxi:Int = -1n;
         var maxj:Int = -1n;
-        if (i > length1 || j > length2) {
+        if (i > (NUM_BLOCKS_X - 1n)|| j > (NUM_BLOCKS_Y - 1n)) {
             var point:Rail[Int] = [maxi, maxj, max];
             return point;
         }
+        var points:Rail[Int] = getBlockPosition(i, j);
+        var result:Rail[Int] = diagnalCover(points(0n), points(1n), points(2n), points(3n));
+        //Console.OUT.println("working on:" + i + " " + j + " " +points(0n) + " " + points(1n) + " " + points(2n) + " " + points(3n));
+        var myval:Int = result(2n);
+        var mymaxi:Int = result(0n);
+        var mymaxj:Int = result(1n);
         atomic finishStatus(i, j) = -1n;
         var right:Rail[Int] = [maxi, maxj, max];
         var down:Rail[Int] = [maxi, maxj, max];
@@ -229,6 +232,7 @@ public class SmithWatermanParallalTaskDAGBlockwise {
         finish {
             atomic {
                 finishStatus(i, j + 1n)++;
+                //Console.OUT.println(finishStatus(i, j + 1n));
                 if (finishStatus(i, j+1) == 3n) {
                     signalRight = 1n;
                     finishStatus(i, j+1) = -1n;
@@ -276,8 +280,8 @@ public class SmithWatermanParallalTaskDAGBlockwise {
         }
         if (myval > max) {
             max = myval;
-            maxi = i;
-            maxj = j;
+            maxi = mymaxi;
+            maxj = mymaxj;
         }
         var point:Rail[Int] = [maxi, maxj, max];
         return point;
