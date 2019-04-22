@@ -399,6 +399,7 @@ public class SmithWatermanParallalBlockwise {
                 //if (score(i-1n, j-1n)>0n) {i--;j--;}
                 //else     break;             
             } else {
+                Console.OUT.println("direction when exit:" + prevCells(i, j));
                 Console.OUT.println("value when exit:" + score(i, j));
                 break;
             }
