@@ -370,8 +370,7 @@ public class SmithWatermanParallalBlockwise {
                 j--;
                 //if (score(i-1n, j)>0n) i--;
                 //else    break;              
-            }
-            if ((prevCells(i, j) & DR_UP) > 0n) {
+            } else if ((prevCells(i, j) & DR_UP) > 0n) {
                 num ++;
                 gap ++;
                 traceSTR1(str1len) = seq1.charAt(i-1n);
@@ -382,8 +381,7 @@ public class SmithWatermanParallalBlockwise {
 //          return traceback(i, j-1);
                 //if (score(i, j-1n)>0n) j--;
                 //else    break;              
-            }
-            if ((prevCells(i, j) & DR_DIAG) > 0n) {
+            } else if ((prevCells(i, j) & DR_DIAG) > 0n) {
                 if (seq1.charAt(i-1n) == seq2.charAt(j-1n)) {
                     identity ++;
                 }
