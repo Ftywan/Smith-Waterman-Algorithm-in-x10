@@ -369,7 +369,7 @@ class BlosumReader {
             var pos:Int = 1n;
             for (j in 0n .. NUMOFSEQ) {
                 
-                while (chars(j + pos) == "") {
+                while (chars(j + pos).equals("")) {
                     pos ++;
                 }
 
