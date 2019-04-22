@@ -167,9 +167,9 @@ public class SmithWatermanParallalTaskDAG {
     public def workerThread(var i:Int, var j:Int):Rail[Int] {
         //Console.OUT.print("");
         var myval:Int = calculateScore(i, j);
-        var max:Int = score(i, j); 
-        var maxi:Int = i;
-        var maxj:Int = j;
+        var max:Int = -999999n; 
+        var maxi:Int = -1;
+        var maxj:Int = -1;
         if (i > length1 || j > length2 || finishStatus(i, j) < 3) {
             var point:Rail[Int] = [maxi, maxj, max];
             return point;
