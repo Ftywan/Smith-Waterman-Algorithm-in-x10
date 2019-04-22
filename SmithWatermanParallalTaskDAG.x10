@@ -210,23 +210,6 @@ public class SmithWatermanParallalTaskDAG {
         return point;
     }
 
-    public def workerThread(var id:Int) {
-        if (id == 0) {
-            for (i in 0..(this.NUM_BLOCKS_Y - 1n)) {
-                var points:Rail[Int] = getBlockPosition(id, i);
-                diagnalCover(points(0n), points(1n), points(2n), points(3n));
-                this.finishStatus(id, i) = 1n;
-            }
-        } else {
-            for (i in 0..(this.NUM_BLOCKS_Y - 1n)) {
-                when (this.finishStatus(id -1n, i) == 1n) {}
-                var points:Rail[Int] = getBlockPosition(id, i);
-                diagnalCover(points(0n), points(1n), points(2n), points(3n));
-                this.finishStatus(id, i) = 1n;
-            }
-        }
-    }
-
     public def diagnalCover(var a1:Int, var b1:Int, var a2:Int, var b2:Int):Rail[Int] {
         var max:Int = -99999999n;
         var maxi:Int = -1n;
