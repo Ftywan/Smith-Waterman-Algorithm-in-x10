@@ -22,6 +22,9 @@ public class SmithWaterman {
     private val length1:Int;
     private val length2:Int;
 
+    private val maxi:Int;
+    private val maxj:Int;
+
     //the score matrix
     private var score:Array_2[Int];
 
@@ -122,18 +125,28 @@ public class SmithWaterman {
             prevCells(0, j) = DR_ZERO;
         }
 
-        diagnalCover(1n, 1n, length1, length2);
+        var point:Rail[Int] = diagnalCover(1n, 1n, length1, length2);
 
+        this.maxi = point(0);
+        this.maxj = point(1);
     }
 
-    public def diagnalCover(var a1:Int, var b1:Int, var a2:Int, var b2:Int) {
-
+    public def diagnalCover(var a1:Int, var b1:Int, var a2:Int, var b2:Int):Rail[Int] {
+        var max:Int = -99999999n;
+        var maxi:Int = -1;
+        var maxj:Int = -1;
+        var temp:Int = -1;
         //start from row 0
         for(j in b1 .. b2) {
             var i:Int = a1;
             var k:Int = j;
             while(i <= a2 && k >= b1) {
-                calculateScore(i, k);
+                temp = calculateScore(i, k);
+                if (temp > max) {
+                    max = temp;
+                    maxi = i;
+                    maxj = k;
+                }
                 i++;
                 k--;
             }
@@ -144,15 +157,24 @@ public class SmithWaterman {
             var j:Int = b2;
             var k:Int = i;
             while(k <=a2 && j >= b1) {
-                calculateScore(k, j);
+                temp = calculateScore(k, j);
+                if (temp > max) {
+                    max = temp;
+                    maxi = k;
+                    maxj = j;
+                }
                 k++;
                 j--;
             }
         }
+
+        var point:Rail[Int] = [maxi, maxj, max];
+
+        return point;
     }
 
 
-    public def calculateScore(var i:Int, var j:Int) {
+    public def calculateScore(var i:Int, var j:Int):Int {
         var diagScore:Int = score(i-1, j-1) + similarity(i, j);
 
         var newOpenGapLeftScore:Int = score(i, j-1) - GAP_OPENING_PANALTY - GAP_EXTENSION_PANALTY;
@@ -168,7 +190,7 @@ public class SmithWaterman {
         var leftScore:Int = scoreLeft(i-1, j);
 
         //score(i, j) = Math.max(diagScore, Math.max(upScore, Math.max(leftScore, 0n)));
-        score(i, j) = Math.max(diagScore, Math.max(upScore, leftScore));
+        score(i, j) = Math.max(diagScore, Math.max(upScore, Math.max(leftScore, 0n)));
         prevCells(i, j) = 0n;
 
         if (diagScore == score(i, j)) {
@@ -177,12 +199,10 @@ public class SmithWaterman {
             prevCells(i, j) |= DR_LEFT;
         } else if (upScore == score(i, j)) {
             prevCells(i, j) |= DR_UP;
-        }
-        /*
-        if (0n == score(i, j)) {
+        } else if (0n == score(i, j)) {
             prevCells(i, j) |= DR_ZERO;
         }
-        */
+        return score(i, j);
     }
 
     public def getMaxScore():Int {
@@ -265,6 +285,7 @@ public class SmithWaterman {
     }
 
     public def getMatchGap():Rail[Int] {
+        /*
         var max:Int = 0n;
         var maxJ:Int = 0n;
         for(j in 1n..length2) {
@@ -273,7 +294,9 @@ public class SmithWaterman {
                 maxJ = j;
             } 
         }
-        var endPoint:Rail[Int] = traceback(length1, maxJ);
+        */
+        //var endPoint:Rail[Int] = traceback(length1, maxJ);
+        var endPoint:Rail[Int] = traceback(this.maxi, this.maxj);
         var result:Rail[Int] = [endPoint(3n), endPoint(4n)];
         return result;
     }
@@ -312,11 +335,11 @@ public class SmithWaterman {
         sw.buildMatrix();
 
         Console.OUT.println("IO debug");
-        Console.OUT.println(sw.seq1);
-        Console.OUT.println(sw.seq2);
+        //Console.OUT.println(sw.seq1);
+        //Console.OUT.println(sw.seq2);
         //Console.OUT.println(sw.blosumFileName);
-        Console.OUT.println(sw.GAP_OPENING_PANALTY);
-        Console.OUT.println(sw.GAP_EXTENSION_PANALTY);
+        //Console.OUT.println(sw.GAP_OPENING_PANALTY);
+        //Console.OUT.println(sw.GAP_EXTENSION_PANALTY);
 
         Console.OUT.println("The max alignment score: ");
         Console.OUT.println(sw.getMaxScore());
@@ -348,7 +371,7 @@ class FastaReader {
         var iterator:ReaderIterator[String] = fastaReader.lines();
         while (iterator.hasNext()) {
             line = iterator.next();
-            Console.OUT.println(line);
+            //Console.OUT.println(line);
             line = line.trim();
             builder.add(line);
         }
