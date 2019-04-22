@@ -17,10 +17,10 @@ import x10.xrx.Runtime;
 
 
 
-public class SmithWatermanParallalTaskDAG {
+public class SmithWatermanParallalTaskDAGBlockwise {
 
-    private val NUM_COLS_IN_BLOCK:Int = 1n;
-    private val NUM_ROWS_IN_BLOCK:Int = 1n;
+    private val NUM_COLS_IN_BLOCK:Int = 32;
+    private val NUM_ROWS_IN_BLOCK:Int = 32;
 
     private val NUM_BLOCKS_X:Int;
     private val NUM_BLOCKS_Y:Int;
@@ -95,8 +95,8 @@ public class SmithWatermanParallalTaskDAG {
 
         //this.NUM_ROWS_IN_BLOCK = Math.ceil((this.length1 as Double) / this.NUM_BLOCKS_X) as Int;
         //this.NUM_BLOCKS_Y = Math.ceil((this.length2 as Double) / this.NUM_BLOCKS_Y) as Int;
-        this.NUM_BLOCKS_X = length1 + 1n;
-        this.NUM_BLOCKS_Y = length2 + 1n;
+        this.NUM_BLOCKS_X = Math.ceil((this.length1 as Double) / this.NUM_BLOCKS_X) as Int;
+        this.NUM_BLOCKS_Y = Math.ceil((this.length2 as Double) / this.NUM_BLOCKS_Y) as Int;
         this.finishStatus = new Array_2[Int](NUM_BLOCKS_X + 2, NUM_BLOCKS_Y + 2);
 
         //for (i in 0..(NUM_BLOCKS_X - 1)) {
@@ -164,8 +164,50 @@ public class SmithWatermanParallalTaskDAG {
         this.maxj = point(1);
     }
 
+    def getBlockPosition(var i:Int, var j:Int):Rail[Int] {
+
+        var position:Rail[Int];
+
+        //divide the score matrix to blocks
+        //get the num of blocks
+        //size of the martix is (length+1n)(length2+1n)
+        /*
+        var numOfBlocksInHight = length1 / NUM_ROWS_IN_BLOCK + 1n;
+        var numOfBlocksInWidth = length2 / NUM_COLS_IN_BLOCK + 1n;
+        */
+
+        //get the final position
+        var leftI:Int;
+        var leftJ:Int;
+        var rightI:Int;
+        var rightJ:Int;
+
+        //topleft position: never excel, need not consider the special case
+        leftI = i * NUM_ROWS_IN_BLOCK + 1n;
+        leftJ = j * NUM_COLS_IN_BLOCK + 1n;
+
+        //special case: edge of the matrix
+        if(i == NUM_BLOCKS_X-1n) {
+            rightI = length1;
+        }else {
+            rightI = (i + 1n) * NUM_ROWS_IN_BLOCK;
+        }
+
+        if(j == NUM_BLOCKS_Y-1n) {
+            rightJ = length2;
+        }else {
+            rightJ = (j + 1n) * NUM_COLS_IN_BLOCK;
+        }
+
+        position = [leftI, leftJ, rightI, rightJ];
+
+        return position;
+    }
+
     public def workerThread(var i:Int, var j:Int):Rail[Int] {
         //Console.OUT.print("");
+        var points:Rail[Int]
+        var result:Rail[Int] = 
         var myval:Int = calculateScore(i, j);
         var max:Int = -999999n; 
         var maxi:Int = -1n;
@@ -506,7 +548,7 @@ public class SmithWatermanParallalTaskDAG {
         val extPanalty:Int = Int.parse(param(4n));
 
 
-        val sw:SmithWatermanParallalTaskDAG = new SmithWatermanParallalTaskDAG(fasta1, fasta2, match, openPanalty, extPanalty);
+        val sw:SmithWatermanParallalTaskDAGBlockwise = new SmithWatermanParallalTaskDAGBlockwise(fasta1, fasta2, match, openPanalty, extPanalty);
         sw.buildMatrix();
         //sw.printMatrix();
 
