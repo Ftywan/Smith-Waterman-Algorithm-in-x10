@@ -182,7 +182,12 @@ public class SmithWatermanParallalTaskDAG {
         //var down:Rail[Int];
         //var dignal:Rail[Int];
         finish {
-            atomic finishStatus(i, j + 1n)++;
+            atomic {
+                finishStatus(i, j + 1n)++;
+                if (finishStatus(i, j+1) == 3n) {
+                    Console.OUT.println("aa");
+                }
+            }
             if (finishStatus(i, j+1) == 3n) {
                 async right = workerThread(i as Int, (j + 1n) as Int);
             }
