@@ -25,6 +25,9 @@ public class SmithWaterman {
     private var maxi:Int;
     private var maxj:Int;
 
+    private var outstr1:String;
+    private var outstr2:String;
+
     //the score matrix
     private var score:Array_2[Int];
 
@@ -175,9 +178,9 @@ public class SmithWaterman {
 
 
     public def calculateScore(var i:Int, var j:Int):Int {
-        Console.OUT.println(i + " " + j);
+        //Console.OUT.println(i + " " + j);
         var diagScore:Int = score(i-1, j-1) + similarity(i, j);
-        Console.OUT.println("dig:" + score(i-1, j-1) + " simi:" + similarity(i, j));
+        //Console.OUT.println("dig:" + score(i-1, j-1) + " simi:" + similarity(i, j));
 
         var newOpenGapLeftScore:Int = score(i, j-1) - GAP_OPENING_PANALTY;
         var newExtentionGapLeftScore:Int = scoreLeft(i, j-1) - GAP_EXTENSION_PANALTY;
@@ -204,13 +207,13 @@ public class SmithWaterman {
         } else if (0n == score(i, j)) {
             prevCells(i, j) |= DR_ZERO;
         }
-        Console.OUT.println("final:" + score(i, j));
+        //Console.OUT.println("final:" + score(i, j));
         return score(i, j);
     }
 
     public def getMaxScore():Int {
-        var maxScore:Int = 0n;
-
+        var maxScore:Int = this.score(maxi, maxj);
+        /*
         for(i in 1 .. length1) {
             for(j in 1 .. length2) {
                 if(score(i, j) > maxScore) {
@@ -218,6 +221,7 @@ public class SmithWaterman {
                 }
             }
         }
+        */
         return maxScore;
     }
 
@@ -229,15 +233,22 @@ public class SmithWaterman {
         var num:Int = 0n;
         var match:Int = 0n;
         var gap:Int = 0n;
-        var traceSTR1:Rail[Byte] = new Rail[Byte](Math.max(length1, length2) + 10);
-        var traceSTR2:Rail[Byte] = new Rail[Byte](Math.max(length1, length2) + 10);
-
+        var traceSTR1:Rail[Byte] = new Rail[Byte](Math.max(length1, length2)*2);
+        var traceSTR2:Rail[Byte] = new Rail[Byte](Math.max(length1, length2)*2);
+        var str1len:Int = 0n;
+        var str2len:Int = 0n;
+        var outstr1arr:Rail[Byte] = new Rail[Byte](Math.max(length1, length2)*2);
+        var outstr2arr:Rail[Byte] = new Rail[Byte](Math.max(length1, length2)*2);
         //find the direction to traceback
         while (true)
         {
             if ((prevCells(i, j) & DR_LEFT) > 0n) {
                 num ++;
                 gap ++;
+                traceSTR1[str1len] = '-';
+                str1len ++;
+                traceSTR2[str1len] = seq2.charAt(j-1n);
+                str2len ++;
                 j--;
                 //if (score(i-1n, j)>0n) i--;
                 //else    break;              
@@ -245,6 +256,10 @@ public class SmithWaterman {
             if ((prevCells(i, j) & DR_UP) > 0n) {
                 num ++;
                 gap ++;
+                traceSTR1[str1len] = seq1.charAt(i-1n);
+                str1len ++;
+                traceSTR2[str1len] = '-';
+                str2len ++;
                 i--;
 //          return traceback(i, j-1);
                 //if (score(i, j-1n)>0n) j--;
@@ -253,6 +268,10 @@ public class SmithWaterman {
             if ((prevCells(i, j) & DR_DIAG) > 0n) {
                 num ++;
                 match ++;
+                traceSTR1[str1len] = seq1.charAt(i-1n);
+                traceSTR2[str1len] = seq2.charAt(j-1n);
+                str1len ++;
+                str2len ++;
                 j--;
                 i--;
 //          return traceback(i-1, j-1);
@@ -262,6 +281,13 @@ public class SmithWaterman {
                 break;
             }
         }
+
+        for (i in 0..(str1len-1)) {
+            outstr1arr[str1len - i - 1] = traceSTR1[i];
+            outstr2arr[str1len - i - 1] = traceSTR2[i];
+        }
+        this.outstr1 = String(outstr1arr);
+        this.outstr2 = String(outstr2arr);
         var point:Rail[Int] = [i, j, num, match, gap];
         return point;
     }
@@ -359,7 +385,7 @@ public class SmithWaterman {
 
         val sw:SmithWaterman = new SmithWaterman(fasta1, fasta2, match, openPanalty, extPanalty);
         sw.buildMatrix();
-        sw.printMatrix();
+        //sw.printMatrix();
 
         Console.OUT.println("IO debug");
         //Console.OUT.println(sw.seq1);
@@ -377,6 +403,12 @@ public class SmithWaterman {
         Console.OUT.println(result(0));
         Console.OUT.println("Gaps: ");
         Console.OUT.println(result(1));
+
+        Console.OUT.println("Str1: ");
+        Console.OUT.println(sw.outstr1);
+
+        Console.OUT.println("Str2: ");
+        Console.OUT.println(sw.outstr2;
 
     }
 
