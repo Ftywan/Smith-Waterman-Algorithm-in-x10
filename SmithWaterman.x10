@@ -365,7 +365,7 @@ class BlosumReader {
             line = fastaReader.readLine().trim();
             chars = line.split(" ");
             for (j in 0n .. NUMOFSEQ) {
-                this.BLOSUM62(i, j) = Int.parseInt(chars(j + 1n));
+                this.BLOSUM62(i, j) = Int.parseInt(chars(j + 2n));
             }
         }
 
