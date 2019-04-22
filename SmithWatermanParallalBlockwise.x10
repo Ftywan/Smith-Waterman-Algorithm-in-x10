@@ -94,7 +94,7 @@ public class SmithWatermanParallalBlockwise {
         prevCells = new Array_2[Int](length1 + 1, length2 + 1);
 
         this.NUM_ROWS_IN_BLOCK = Math.ceil((this.length1 as Double) / this.NUM_BLOCKS_X) as Int;
-        this.NUM_BLOCKS_Y = Math.ceil((this.length2 as Double) / this.NUM_BLOCKS_Y) as Int;
+        this.NUM_BLOCKS_Y = Math.ceil((this.length2 as Double) / this.NUM_COLS_IN_BLOCK) as Int;
 
         this.finishStatus = new Array_2[Int](NUM_BLOCKS_X, NUM_BLOCKS_Y);
 
@@ -205,8 +205,10 @@ public class SmithWatermanParallalBlockwise {
         //divide the score matrix to blocks
         //get the num of blocks
         //size of the martix is (length+1n)(length2+1n)
+        /*
         var numOfBlocksInHight = length1 / NUM_ROWS_IN_BLOCK + 1n;
         var numOfBlocksInWidth = length2 / NUM_COLS_IN_BLOCK + 1n;
+        */
 
         //get the final position
         var leftI:Int;
@@ -219,13 +221,13 @@ public class SmithWatermanParallalBlockwise {
         leftJ = j * NUM_COLS_IN_BLOCK + 1n;
 
         //special case: edge of the matrix
-        if(i == numOfBlocksInHight-1n) {
+        if(i == NUM_BLOCKS_X-1n) {
             rightI = length1;
         }else {
             rightI = (i + 1n) * NUM_ROWS_IN_BLOCK + 1n;
         }
 
-        if(j == numOfBlocksInWidth-1n) {
+        if(j == NUM_BLOCKS_Y-1n) {
             rightJ = length2;
         }else {
             rightJ = (j + 1n) * NUM_COLS_IN_BLOCK + 1n;
