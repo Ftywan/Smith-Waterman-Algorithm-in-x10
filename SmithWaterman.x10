@@ -155,11 +155,11 @@ public class SmithWaterman {
     public def calculateScore(var i:Int, var j:Int) {
         var diagScore:Int = score(i-1, j-1) + similarity(i, j);
 
-        var newOpenGapLeftScore:Int = score(i, j-1) - GAP_OPENING_PANALTY;
+        var newOpenGapLeftScore:Int = score(i, j-1) - GAP_OPENING_PANALTY - GAP_EXTENSION_PANALTY;
         var newExtentionGapLeftScore:Int = scoreLeft(i, j-1) - GAP_EXTENSION_PANALTY;
         scoreLeft(i, j) = Math.max(newOpenGapLeftScore, newExtentionGapLeftScore);
 
-        var newOpenGapUpScore:Int = score(i-1, j) - GAP_OPENING_PANALTY;
+        var newOpenGapUpScore:Int = score(i-1, j) - GAP_OPENING_PANALTY - GAP_EXTENSION_PANALTY;
         var newExtentionGapUpScore:Int = scoreUp(i-1, j) - GAP_EXTENSION_PANALTY;
         scoreUp(i, j) = Math.max(newOpenGapUpScore,newExtentionGapUpScore);
 
