@@ -171,9 +171,12 @@ public class SmithWatermanParallalTaskDAG {
         var max:Int = -999999n; 
         var maxi:Int = -1n;
         var maxj:Int = -1n;
-        var right:Rail[Int] = [max, maxi, maxj];
-        var down:Rail[Int] = [max, maxi, maxj];
-        var dignal:Rail[Int] = [max, maxi, maxj];
+        //var right:Rail[Int] = [max, maxi, maxj];
+        //var down:Rail[Int] = [max, maxi, maxj];
+        //var dignal:Rail[Int] = [max, maxi, maxj];
+        var right:Rail[Int];
+        var down:Rail[Int];
+        var dignal:Rail[Int];
         if (i > length1 || j > length2) {
             var point:Rail[Int] = [max, maxi, maxj];
             return point;
@@ -189,7 +192,7 @@ public class SmithWatermanParallalTaskDAG {
                 async down = workerThread((i + 1n) as Int, j as Int);
             }
             if (finishStatus(i+1n, j+1n) == 3n) {
-                async dignal = workerThread((i + 1n) as Int, (j + 1n) as Int);
+                dignal = workerThread((i + 1n) as Int, (j + 1n) as Int);
             }
         }
         if (right(2n) > max) {
