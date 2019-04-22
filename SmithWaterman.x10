@@ -19,11 +19,11 @@ public class SmithWaterman {
     //two sequences of AA
     private val seq1:String;
     private val seq2:String;
-    val length1:Int;
-    val length2:Int;
+    private val length1:Int;
+    private val length2:Int;
 
-    private val maxi:Int;
-    private val maxj:Int;
+    val maxi:Int;
+    val maxj:Int;
 
     //the score matrix
     private var score:Array_2[Int];
