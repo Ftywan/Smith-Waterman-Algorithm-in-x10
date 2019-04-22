@@ -59,6 +59,9 @@ public class SmithWaterman {
         this.blosum62 = blosumReader.getBlosum62();
         this.seqToNum = blosumReader.getSeqToNum();
 
+        Console.OUT.println(this.blosum62(1, 1));
+        Console.OUT.println(this.blosum62(2, 2));
+
         this.seq1 = fastaReader.readFastaFile(fastaName1);
         this.seq2 = fastaReader.readFastaFile(fastaName2);
         this.length1 = seq1.length();
@@ -360,7 +363,9 @@ class BlosumReader {
         var chars: Rail[String] = new Rail[String](NUMOFSEQ + 1n);
         for (i in 0n .. (NUMOFSEQ)) {
             line = fastaReader.readLine().trim();
+            Console.OUT.println(line);
             chars = line.split(" ");
+            Console.OUT.println(chars(1));
             for (j in 0n .. NUMOFSEQ) {
                 if ((chars(j + 1n)) == " ") {
                     continue;
@@ -369,6 +374,7 @@ class BlosumReader {
                 }
             }
         }
+
     }
 
     private def initSeqToNum(): HashMap[Char, Int] {
