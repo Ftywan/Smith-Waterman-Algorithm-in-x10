@@ -105,7 +105,7 @@ public class SmithWatermanParallalTaskDAGBlockwise {
         //    }
         //}
 
-        for (i in 2..(NUM_BLOCKS_X - 1)) {
+        for (i in 1..(NUM_BLOCKS_X - 1)) {
             finishStatus(0, i) = 2n;
             finishStatus(i, 0) = 2n;
         }
