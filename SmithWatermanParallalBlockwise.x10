@@ -101,8 +101,6 @@ public class SmithWatermanParallalBlockwise {
         for (i in 0..(NUM_BLOCKS_X - 1n)) {
             for (j in 0..(NUM_BLOCKS_Y -1n )) {
                 finishStatus(i, j) = 0n;
-                var point:Rail[Int] = getBlockPosition(i as Int, j as Int);
-                Console.OUT.println("i:" + i + " j:" + j + " " + point(0n) + " " + point(1n) + " " + point(2n) + " " + point(3n));
             }
         }
     }
@@ -127,6 +125,14 @@ public class SmithWatermanParallalBlockwise {
     }
 
     public def buildMatrix() {
+
+        for (i in 0..(NUM_BLOCKS_X - 1n)) {
+            for (j in 0..(NUM_BLOCKS_Y -1n )) {
+                var point:Rail[Int] = getBlockPosition(i as Int, j as Int);
+                Console.OUT.println("i:" + i + " j:" + j + " " + point(0n) + " " + point(1n) + " " + point(2n) + " " + point(3n));
+            }
+        }
+
         var max:Int = -99999999n;
         var maxi:Int = -1n;
         var maxj:Int = -1n;
