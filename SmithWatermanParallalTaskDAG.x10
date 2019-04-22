@@ -97,7 +97,7 @@ public class SmithWatermanParallalTaskDAG {
         //this.NUM_BLOCKS_Y = Math.ceil((this.length2 as Double) / this.NUM_BLOCKS_Y) as Int;
         this.NUM_BLOCKS_X = length1 + 1n;
         this.NUM_BLOCKS_Y = length2 + 1n;
-        this.finishStatus = new Array_2[Int](NUM_BLOCKS_X, NUM_BLOCKS_Y);
+        this.finishStatus = new Array_2[Int](NUM_BLOCKS_X + 2, NUM_BLOCKS_Y + 2);
 
         //for (i in 0..(NUM_BLOCKS_X - 1)) {
         //    for (j in 0..(NUM_BLOCKS_Y -1 )) {
