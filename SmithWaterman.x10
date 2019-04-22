@@ -372,6 +372,8 @@ class BlosumReader {
                     pos ++;
                 }
                 this.BLOSUM62(i, j) = Int.parseInt(chars(j + pos));
+                Console.OUT.println(i + " " + j + " " + this.BLOSUM62(i, j));
+
                 pos ++;
             }
         }
