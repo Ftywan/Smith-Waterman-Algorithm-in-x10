@@ -185,29 +185,34 @@ public class SmithWaterman {
     //returns the end point of tracing back (the top left cell) and the number of matches
     public def traceback(var i:Int, var j:Int):Rail[Int] {
         var num:Int = 0n;
+        var match:Int = 0n;
+        var gap:Int = 0n;
 
         //find the direction to traceback
         while (true)
         {
             if ((prevCells(i, j) & DR_LEFT) > 0n) {
                 num ++;
+                gap ++;
                 if (score(i-1n, j)>0n) i--;
                 else    break;              
             }
             if ((prevCells(i, j) & DR_UP) > 0n) {
                 num ++;
+                gap ++;
 //          return traceback(i, j-1);
                 if (score(i, j-1n)>0n) j--;
                 else    break;              
             }
             if ((prevCells(i, j) & DR_DIAG) > 0n) {
                 num ++;
+                match ++;
 //          return traceback(i-1, j-1);
                 if (score(i-1n, j-1n)>0n) {i--;j--;}
                 else     break;             
             }
         }
-        var point:Rail[Int] = [i, j, num];
+        var point:Rail[Int] = [i, j, num, match, gap];
         return point;
     }
 
@@ -230,6 +235,20 @@ public class SmithWaterman {
             }
         }
         return matches;
+    }
+
+    public def getMatchGap():Rail[Int] {
+        var max:Int = 0n;
+        var maxJ:Int = 0n;
+        for(j in 1n..length2) {
+            if (score(length1, j) > max) {
+                max = score(length1, j);
+                maxJ = j;
+            } 
+        }
+        var endPoint:Rail[Int] = traceback(i, maxJ);
+        var result:Rail[Int] = [endPoint(3n), endPoint(4n)];
+        return result;
     }
 
     public def getTototalNumber():Int {
@@ -280,7 +299,11 @@ public class SmithWaterman {
         Console.OUT.println(sw.getMaxScore());
 
         Console.OUT.println("Matches: ");
-        Console.OUT.println(sw.getMatchNumber());
+        //Console.OUT.println(sw.getMatchNumber());
+        var result:Rail[Int] = sw.getMatchGap();
+        Console.OUT.println(result(0));
+        Console.OUT.println("Gaps: ");
+        Console.OUT.println(result(1));
 
     }
 
