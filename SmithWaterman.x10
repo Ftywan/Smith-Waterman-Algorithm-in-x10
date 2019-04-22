@@ -59,8 +59,6 @@ public class SmithWaterman {
         this.blosum62 = blosumReader.getBlosum62();
         this.seqToNum = blosumReader.getSeqToNum();
 
-        Console.OUT.println(this.blosum62(1, 1));
-        Console.OUT.println(this.blosum62(2, 2));
 
         this.seq1 = fastaReader.readFastaFile(fastaName1);
         this.seq2 = fastaReader.readFastaFile(fastaName2);
