@@ -75,7 +75,7 @@ public class SmithWaterman {
         
     }
 
-    private def similarity(i:Int, j:Int):Int {
+    public def similarity(i:Int, j:Int):Int {
         return blosum62(seqToNum.get(seq1.charAt(i-1n)), seqToNum.get(seq2.charAt(j-1n)));
     }
 
@@ -261,13 +261,6 @@ public class SmithWaterman {
         val openPanalty:Int = Int.parse(param(3n));
         val extPanalty:Int = Int.parse(param(4n));
 
-        Console.OUT.println("IO debug");
-        Console.OUT.println(fasta1);
-        Console.OUT.println(fasta2);
-        Console.OUT.println(match);
-        Console.OUT.println(openPanalty);
-        Console.OUT.println(extPanalty);
-
 
         val sw:SmithWaterman = new SmithWaterman(fasta1, fasta2, match, openPanalty, extPanalty);
         sw.buildMatrix();
@@ -275,9 +268,11 @@ public class SmithWaterman {
         Console.OUT.println("IO debug");
         Console.OUT.println(sw.seq1);
         Console.OUT.println(sw.seq2);
-        Console.OUT.println(sw.blosumFileName);
+        //Console.OUT.println(sw.blosumFileName);
         Console.OUT.println(sw.GAP_OPENING_PANALTY);
         Console.OUT.println(sw.GAP_EXTENSION_PANALTY);
+
+        Console.OUT.println(sw.similarity(1, 1));
 
         Console.OUT.println("The max alignment score: ");
         Console.OUT.println(sw.getMaxScore());
