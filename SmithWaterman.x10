@@ -22,8 +22,8 @@ public class SmithWaterman {
     private val length1:Int;
     private val length2:Int;
 
-    val maxi:Int;
-    val maxj:Int;
+    private var maxi:Int;
+    private var maxj:Int;
 
     //the score matrix
     private var score:Array_2[Int];
