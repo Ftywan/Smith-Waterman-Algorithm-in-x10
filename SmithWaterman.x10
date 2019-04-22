@@ -233,12 +233,12 @@ public class SmithWaterman {
         var num:Int = 0n;
         var match:Int = 0n;
         var gap:Int = 0n;
-        var traceSTR1:Rail[Char] = new Rail[Byte](Math.max(length1, length2)*2);
-        var traceSTR2:Rail[Char] = new Rail[Byte](Math.max(length1, length2)*2);
+        var traceSTR1:Rail[Char] = new Rail[Char](Math.max(length1, length2)*2);
+        var traceSTR2:Rail[Char] = new Rail[Char](Math.max(length1, length2)*2);
         var str1len:Int = 0n;
         var str2len:Int = 0n;
-        var outstr1arr:Rail[Char] = new Rail[Byte](Math.max(length1, length2)*2);
-        var outstr2arr:Rail[Char] = new Rail[Byte](Math.max(length1, length2)*2);
+        var outstr1arr:Rail[Char] = new Rail[Char](Math.max(length1, length2)*2);
+        var outstr2arr:Rail[Char] = new Rail[Char](Math.max(length1, length2)*2);
         //find the direction to traceback
         while (true)
         {
