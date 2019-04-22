@@ -13,6 +13,8 @@ import x10.io.Console;
 import x10.lang.Char;
 import x10.lang.*;
 import x10.io.*;
+import x10.xrx.Runtime;
+
 
 
 public class SmithWatermanParallalBlockwise {
@@ -392,7 +394,8 @@ public class SmithWatermanParallalBlockwise {
 
     public static def main(argv: Rail[String]) {
         Console.OUT.println("Input the FASTA_FILE_1 FASTA_FILE_2 MATCH_FILE GAP_OPENING_PANALTY GAP_EXTENSION_PANALTY");
-        Console.OUT.println(X10_NTHREADS);
+        Console.OUT.println(Runtime.NTHREADS);
+        Console.OUT.println(Runtime.MAX_THREADS);
         val s = x10.io.Console.IN.readLine();
 
         val param = s.split(" ");
