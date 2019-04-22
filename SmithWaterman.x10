@@ -102,23 +102,23 @@ public class SmithWaterman {
 
         //base case
         score(0, 0) = 0n;
-        scoreLeft(0, 0) = 0n;
-        scoreUp(0, 0) = 0n;
+        scoreLeft(0, 0) = -9999990n;
+        scoreLeft(0, 0) = -9999990n;
         prevCells(0,0) = DR_ZERO;
 
         //the first row
         for(i in 1..length1) {
             score(i, 0) = 0n;
-            scoreLeft(i, 0) = 0n;
-            scoreUp(i, 0) = 0n;
+            scoreLeft(i, 0) = -9999990n;
+            scoreUp(i, 0) = -9999990n;
             prevCells(i, 0) = DR_ZERO;
         }
 
         //the first column
         for(j in 1..length2) {
             score(0, j) = 0n;
-            scoreLeft(0, j) = 0n;
-            scoreUp(0, j) = 0n;
+            scoreLeft(0, j) = -9999990n;
+            scoreUp(0, j) = -9999990n;
             prevCells(0, j) = DR_ZERO;
         }
 
@@ -173,11 +173,9 @@ public class SmithWaterman {
 
         if (diagScore == score(i, j)) {
             prevCells(i, j) |= DR_DIAG;
-        }
-        if (leftScore == score(i, j)) {
+        } else if (leftScore == score(i, j)) {
             prevCells(i, j) |= DR_LEFT;
-        }
-        if (upScore == score(i, j)) {
+        } else if (upScore == score(i, j)) {
             prevCells(i, j) |= DR_UP;
         }
         /*
@@ -217,22 +215,28 @@ public class SmithWaterman {
             if ((prevCells(i, j) & DR_LEFT) > 0n) {
                 num ++;
                 gap ++;
-                if (score(i-1n, j)>0n) i--;
-                else    break;              
+                j--;
+                //if (score(i-1n, j)>0n) i--;
+                //else    break;              
             }
             if ((prevCells(i, j) & DR_UP) > 0n) {
                 num ++;
                 gap ++;
+                i--;
 //          return traceback(i, j-1);
-                if (score(i, j-1n)>0n) j--;
-                else    break;              
+                //if (score(i, j-1n)>0n) j--;
+                //else    break;              
             }
             if ((prevCells(i, j) & DR_DIAG) > 0n) {
                 num ++;
                 match ++;
+                j--;
+                i--;
 //          return traceback(i-1, j-1);
-                if (score(i-1n, j-1n)>0n) {i--;j--;}
-                else     break;             
+                //if (score(i-1n, j-1n)>0n) {i--;j--;}
+                //else     break;             
+            } else {
+                break;
             }
         }
         var point:Rail[Int] = [i, j, num, match, gap];
