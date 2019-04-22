@@ -177,13 +177,13 @@ public class SmithWatermanParallalTaskDAG {
             atomic finishStatus(i + 1n, j)++;
             atomic finishStatus(i + 1n, j + 1n)++;
             if (finishStatus(i, j+1n) == 3n) {
-                async right = workerThread(i, j + 1n);
+                async right = workerThread(i as Int, (j + 1n) as Int);
             }
             if (finishStatus(i+1n, j) == 3n) {
-                async down = workerThread(i + 1n, j);
+                async down = workerThread((i + 1n) as Int, j as Int);
             }
             if (finishStatus(i+1n, j+1n) == 3n) {
-                async dignal = workerThread(i + 1n, j + 1n);
+                async dignal = workerThread((i + 1n) as Int, (j + 1n) as Int);
             }
         }
         if (right(2n) > max) {
@@ -212,13 +212,13 @@ public class SmithWatermanParallalTaskDAG {
 
     public def workerThread(var id:Int) {
         if (id == 0) {
-            for (i in 0..this.(NUM_BLOCKS_Y - 1n)) {
+            for (i in 0..(this.NUM_BLOCKS_Y - 1n)) {
                 var points:Rail[Int] = getBlockPosition(id, i);
                 diagnalCover(points(0n), points(1n), points(2n), points(3n));
                 this.finishStatus(id, i) = 1n;
             }
         } else {
-            for (i in 0..this.(NUM_BLOCKS_Y - 1n)) {
+            for (i in 0..(this.NUM_BLOCKS_Y - 1n)) {
                 when (this.finishStatus(id -1n, i) == 1n) {}
                 var points:Rail[Int] = getBlockPosition(id, i);
                 diagnalCover(points(0n), points(1n), points(2n), points(3n));
