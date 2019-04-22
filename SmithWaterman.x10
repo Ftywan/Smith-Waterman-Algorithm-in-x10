@@ -236,6 +236,17 @@ public class SmithWaterman {
         return 0n;
     }
 
+    public def getGapNumber():Int {
+        return 0n;
+    }
+
+    public def printAlignments() {
+
+    }
+
+    public def gettotalScore():Int {
+        return 0n;
+    }
 
 
     public static def main(argv: Rail[String]) {
