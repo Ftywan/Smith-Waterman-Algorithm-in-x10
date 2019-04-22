@@ -165,7 +165,11 @@ public class SmithWatermanParallalTaskDAG {
     }
 
     public def workerThread(var i:Int, var j:Int):Rail[Int] {
-        Console.OUT.println(i + " " + j);
+        if (i > length1 || j > length2) {
+            var point:Rail[Int] = [-1n, -1n, -1n];
+            return point;
+        }
+        //Console.OUT.println(i + " " + j);
         atomic finishStatus(i, j) = -1n;
         var myval:Int = calculateScore(i, j);
         var right:Rail[Int] = new Rail[Int]();
