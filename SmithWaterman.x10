@@ -412,11 +412,11 @@ public class SmithWaterman {
         //Console.OUT.println(sw.GAP_EXTENSION_PANALTY);
         var result:Rail[Int] = sw.getMatchGap();
 
-        Console.OUT.print("Identity: " + result(2) + "/" + result(3) + " (" + ((result(2) as Double)/ result(3)) + ")");
+        Console.OUT.println("Identity: " + result(2) + "/" + result(3) + " (" + ((result(2) as Double)/ result(3)) + ")");
 
-        Console.OUT.print("Gaps: " + result(1) + "/" + result(3) + " (" + ((result(1) as Double) / result(3)) + ")");
+        Console.OUT.println("Gaps: " + result(1) + "/" + result(3) + " (" + ((result(1) as Double) / result(3)) + ")");
 
-        Console.OUT.print("Score: " + sw.getMaxScore());
+        Console.OUT.println("Score: " + sw.getMaxScore());
 
         Console.OUT.print("1: ");
         sw.printStr1();
