@@ -332,6 +332,15 @@ public class SmithWaterman {
         }
     }
 
+    /**
+        Get rhe informations.
+        Return: [number of match, number of gaps, number of identity, total number]
+    */
+    public def getMatchGap():Rail[Int] {
+        var endPoint:Rail[Int] = traceback(this.maxi, this.maxj);
+        var result:Rail[Int] = [endPoint(3n), endPoint(4n), endPoint(5n), endPoint(2n)];
+        return result;
+    }
 
     public static def main(argv: Rail[String]) {
         Console.OUT.println("Input the FASTA_FILE_1 FASTA_FILE_2 MATCH_FILE GAP_OPENING_PANALTY GAP_EXTENSION_PANALTY");
