@@ -345,6 +345,7 @@ class FastaReader {
         while (iterator.hasNext()) {
             line = iterator.next().trim();
             builder.add(line);
+            Console.OUT.println(line);
         }
         return builder.toString();
     } 
