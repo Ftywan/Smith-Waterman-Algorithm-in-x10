@@ -77,7 +77,7 @@ public class SmithWaterman {
 
     public def similarity(i:Int, j:Int):Int {
         //return blosum62(seqToNum.get(seq1.charAt(i-1n)), seqToNum.get(seq2.charAt(j-1n)));
-        if (eqToNum.get(seq1.charAt(i-1n)) == seqToNum.get(seq2.charAt(j-1n))) {
+        if (seqToNum.get(seq1.charAt(i-1n)) == seqToNum.get(seq2.charAt(j-1n))) {
             return 5;
         } else {
             return 0;
