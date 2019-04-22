@@ -323,21 +323,21 @@ public class SmithWaterman {
     public def printMatrix() {
         for (i in 1..length1) {
             for (j in 1..length2) {
-                Console.OUT.print("(" + i + " " + j +") " +score(i, j) + " ");
+                Console.OUT.print("|(" + i + " " + j +") " +score(i, j) + "| ");
             }
             Console.OUT.print("\n");
         }
         Console.OUT.print("\n");
         for (i in 1..length1) {
             for (j in 1..length2) {
-                Console.OUT.print(scoreLeft(i, j) + " ");
+                Console.OUT.print("|(" + i + " " + j +") " +scoreLeft(i, j) + "| ");
             }
             Console.OUT.print("\n");
         }
         Console.OUT.print("\n");
         for (i in 1..length1) {
             for (j in 1..length2) {
-                Console.OUT.print(scoreUp(i, j) + " ");
+                Console.OUT.print("|(" + i + " " + j +") " +scoreUp(i, j) + "| ");
             }
             Console.OUT.print("\n");
         }
