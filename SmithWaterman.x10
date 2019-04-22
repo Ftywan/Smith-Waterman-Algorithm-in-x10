@@ -282,9 +282,9 @@ public class SmithWaterman {
             }
         }
 
-        for (i in 0..(str1len-1)) {
-            outstr1arr(str1len - i - 1) = traceSTR1(i);
-            outstr2arr(str1len - i - 1) = traceSTR2(i);
+        for (q in 0..(str1len-1)) {
+            outstr1arr(str1len - q - 1) = traceSTR1(q);
+            outstr2arr(str1len - q - 1) = traceSTR2(q);
         }
         this.outstr1 = String(outstr1arr);
         this.outstr2 = String(outstr2arr);
@@ -408,7 +408,7 @@ public class SmithWaterman {
         Console.OUT.println(sw.outstr1);
 
         Console.OUT.println("Str2: ");
-        Console.OUT.println(sw.outstr2;
+        Console.OUT.println(sw.outstr2);
 
     }
 
