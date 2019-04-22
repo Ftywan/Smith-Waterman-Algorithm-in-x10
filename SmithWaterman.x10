@@ -25,8 +25,9 @@ public class SmithWaterman {
     private var maxi:Int;
     private var maxj:Int;
 
-    private var outstr1:String;
-    private var outstr2:String;
+    private var outstr1arr:Rail[Char];
+    private var outstr2arr:Rail[Char];
+    private var lengthOut:Int;
 
     //the score matrix
     private var score:Array_2[Int];
@@ -237,8 +238,8 @@ public class SmithWaterman {
         var traceSTR2:Rail[Char] = new Rail[Char](Math.max(length1, length2)*2);
         var str1len:Int = 0n;
         var str2len:Int = 0n;
-        var outstr1arr:Rail[Char] = new Rail[Char](Math.max(length1, length2)*2);
-        var outstr2arr:Rail[Char] = new Rail[Char](Math.max(length1, length2)*2);
+        this.outstr1arr = new Rail[Char](Math.max(length1, length2)*2);
+        this.outstr2arr = new Rail[Char](Math.max(length1, length2)*2);
         //find the direction to traceback
         while (true)
         {
@@ -283,13 +284,25 @@ public class SmithWaterman {
         }
 
         for (q in 0..(str1len-1)) {
-            outstr1arr(str1len - q - 1) = traceSTR1(q);
-            outstr2arr(str1len - q - 1) = traceSTR2(q);
+            this.outstr1arr(str1len - q - 1) = traceSTR1(q);
+            this.outstr2arr(str1len - q - 1) = traceSTR2(q);
         }
-        this.outstr1 = String(outstr1arr);
-        this.outstr2 = String(outstr2arr);
+
+        this.lengthOut = str1len;
         var point:Rail[Int] = [i, j, num, match, gap];
         return point;
+    }
+
+    public def printStr1() {
+        for (i in 0..(lengthOut-1)) {
+            Console.OUT.print(this.outstr1arr(i));
+        }
+    }
+
+    public def printStr2() {
+        for (i in 0..(lengthOut-1)) {
+            Console.OUT.print(this.outstr2arr(i));
+        }
     }
 
     public def getMatchNumber():Int {
@@ -405,10 +418,12 @@ public class SmithWaterman {
         Console.OUT.println(result(1));
 
         Console.OUT.println("Str1: ");
-        Console.OUT.println(sw.outstr1);
+        sw.printStr1();
+        Console.OUT.println("\n");
 
         Console.OUT.println("Str2: ");
-        Console.OUT.println(sw.outstr2);
+        sw.printStr2();
+        Console.OUT.println("\n");
 
     }
 
