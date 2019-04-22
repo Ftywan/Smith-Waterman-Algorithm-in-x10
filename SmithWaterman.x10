@@ -106,13 +106,13 @@ public class SmithWaterman {
             if (seqToNum.containsKey(char2)) {
                 return blosum62(seqToNum.get(char1), seqToNum.get(char2));
             } else {
-                return blosum62(seqToNum.get(char1), 23n);
+                return blosum62(seqToNum.get(char1), seqToNum.size());
             }
         } else {
             if (seqToNum.containsKey(char2)) {
-                return blosum62(23n, seqToNum.get(char2));
+                return blosum62(seqToNum.size(), seqToNum.get(char2));
             } else {
-                return blosum62(23n, 23n);
+                return blosum62(seqToNum.size(), seqToNum.size());
             }
         }
     }
