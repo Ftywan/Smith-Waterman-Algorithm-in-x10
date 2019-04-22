@@ -206,16 +206,18 @@ public class SmithWatermanParallalTaskDAGBlockwise {
 
     public def workerThread(var i:Int, var j:Int):Rail[Int] {
         //Console.OUT.print("");
-        var points:Rail[Int]
-        var result:Rail[Int] = 
-        var myval:Int = calculateScore(i, j);
         var max:Int = -999999n; 
         var maxi:Int = -1n;
         var maxj:Int = -1n;
-        if (i > length1 || j > length2) {
+        if (i > NUM_BLOCKS_X || j > NUM_BLOCKS_Y) {
             var point:Rail[Int] = [maxi, maxj, max];
             return point;
         }
+        var points:Rail[Int] = getBlockPosition(i, j);
+        var result:Rail[Int] = diagnalCover(points(0n), points(1n), points(2n), points(3n));
+        var myval:Int = result(2n);
+        var mymaxi:Int = result(0n);
+        var mymaxj:Int = result(1n);
         atomic finishStatus(i, j) = -1n;
         var right:Rail[Int] = [maxi, maxj, max];
         var down:Rail[Int] = [maxi, maxj, max];
@@ -276,8 +278,8 @@ public class SmithWatermanParallalTaskDAGBlockwise {
         }
         if (myval > max) {
             max = myval;
-            maxi = i;
-            maxj = j;
+            maxi = mymaxi;
+            maxj = mymaxj;
         }
         var point:Rail[Int] = [maxi, maxj, max];
         return point;
