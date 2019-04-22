@@ -363,7 +363,9 @@ class BlosumReader {
         var chars: Rail[String] = new Rail[String](NUMOFSEQ + 1n);
         for (i in 0n .. (NUMOFSEQ)) {
             line = fastaReader.readLine().trim();
+            Console.OUT.println(line);
             chars = line.split(" ");
+            Console.OUT.println(chars(1));
             for (j in 0n .. NUMOFSEQ) {
                 this.BLOSUM62(i, j) = Int.parseInt(chars(j + 2n));
             }
