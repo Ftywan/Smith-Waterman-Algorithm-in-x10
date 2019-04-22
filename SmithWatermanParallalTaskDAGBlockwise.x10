@@ -156,7 +156,7 @@ public class SmithWatermanParallalTaskDAGBlockwise {
             prevCells(0, j) = DR_ZERO;
         }
 
-        var point:Rail[Int] = workerThread(1n, 1n);
+        var point:Rail[Int] = workerThread(0n, 0n);
 
         //var point:Rail[Int] = diagnalCover(1n, 1n, length1, length2);
 
