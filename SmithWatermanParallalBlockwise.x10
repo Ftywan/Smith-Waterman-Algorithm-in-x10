@@ -83,8 +83,6 @@ public class SmithWatermanParallalBlockwise {
         this.length1 = seq1.length();
         this.length2 = seq2.length();
 
-        Console.OUT.println(length1);
-
         this.GAP_OPENING_PANALTY = openPanalty;
         this.GAP_EXTENSION_PANALTY = extensionPanalty;
 
@@ -126,13 +124,6 @@ public class SmithWatermanParallalBlockwise {
 
     public def buildMatrix() {
 
-        for (i in 0..(NUM_BLOCKS_X - 1n)) {
-            for (j in 0..(NUM_BLOCKS_Y -1n )) {
-                var point:Rail[Int] = getBlockPosition(i as Int, j as Int);
-                Console.OUT.println("i:" + i + " j:" + j + " " + point(0n) + " " + point(1n) + " " + point(2n) + " " + point(3n));
-            }
-        }
-
         var max:Int = -99999999n;
         var maxi:Int = -1n;
         var maxj:Int = -1n;
@@ -161,7 +152,7 @@ public class SmithWatermanParallalBlockwise {
 
         finish for (i in 0n..(this.NUM_BLOCKS_X - 1n)) async {
                 var maxResult:Rail[Int] = workerThread(i);
-                Console.OUT.println(i + " returned.");
+                //Console.OUT.println(i + " returned.");
                 if (maxResult(2n) > max) {
                     max = maxResult(2n);
                     maxi = maxResult(0n);
@@ -176,7 +167,7 @@ public class SmithWatermanParallalBlockwise {
     }
 
     public def workerThread(var id:Int):Rail[Int] {
-        Console.OUT.println(id + " started.");
+        //Console.OUT.println(id + " started.");
         var max:Int = -99999999n;
         var maxi:Int = -1n;
         var maxj:Int = -1n;
@@ -190,12 +181,12 @@ public class SmithWatermanParallalBlockwise {
                     maxj = maxResult(1n);
                 }
                 this.finishStatus(id, i) = 1n;
-                Console.OUT.println(id + " " + i + " finished");
+                //Console.OUT.println(id + " " + i + " finished");
             }
         } else {
-            Console.OUT.println(id + " ready");
+            //Console.OUT.println(id + " ready");
             for (i in 0n..(this.NUM_BLOCKS_Y - 1n)) {
-                Console.OUT.println(id + " " + i + " waiting");
+                //Console.OUT.println(id + " " + i + " waiting");
                 while (this.finishStatus(id -1n, i) != 1n) {}
                 var points:Rail[Int] = getBlockPosition(id, i);
                 var maxResult:Rail[Int] = diagnalCover(points(0n), points(1n), points(2n), points(3n));
@@ -205,7 +196,7 @@ public class SmithWatermanParallalBlockwise {
                     maxj = maxResult(1n);
                 }
                 this.finishStatus(id, i) = 1n;
-                Console.OUT.println(id + " " + i + " finished");
+                //Console.OUT.println(id + " " + i + " finished");
             }
         }
         var point:Rail[Int] = [maxi, maxj, max];
