@@ -168,8 +168,8 @@ public class SmithWatermanParallalTaskDAG {
         //Console.OUT.print("");
         var myval:Int = calculateScore(i, j);
         var max:Int = -999999n; 
-        var maxi:Int = -1;
-        var maxj:Int = -1;
+        var maxi:Int = -1n;
+        var maxj:Int = -1n;
         if (i > length1 || j > length2 || finishStatus(i, j) < 3) {
             var point:Rail[Int] = [maxi, maxj, max];
             return point;
