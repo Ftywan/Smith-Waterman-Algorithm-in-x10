@@ -323,7 +323,7 @@ public class SmithWaterman {
     public def printMatrix() {
         for (i in 1..length1) {
             for (j in 2..length2) {
-                Console.OUT.print(score(i, j) + " ");
+                Console.OUT.print("(" + i + " " + j +") " +score(i, j) + " ");
             }
             Console.OUT.print("\n");
         }
