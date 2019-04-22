@@ -101,8 +101,8 @@ public class SmithWatermanParallalBlockwise {
         for (i in 0..(NUM_BLOCKS_X - 1n)) {
             for (j in 0..(NUM_BLOCKS_Y -1n )) {
                 finishStatus(i, j) = 0n;
-                var point:Rail[Int] = getBlockPosition(i, j);
-                Console.OUT.println("i:" + i + " j:" + j + " " + point(0) + " " + point(1) + " " + point(2) + " " + point(3));
+                var point:Rail[Int] = getBlockPosition(i as Int, j as Int);
+                Console.OUT.println("i:" + i + " j:" + j + " " + point(0n) + " " + point(1n) + " " + point(2n) + " " + point(3n));
             }
         }
     }
