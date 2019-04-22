@@ -83,7 +83,7 @@ public class SmithWatermanParallalBlockwise {
         this.length1 = seq1.length();
         this.length2 = seq2.length();
 
-        //Console.OUT.println(length1);
+        Console.OUT.println(length1);
 
         this.GAP_OPENING_PANALTY = openPanalty;
         this.GAP_EXTENSION_PANALTY = extensionPanalty;
