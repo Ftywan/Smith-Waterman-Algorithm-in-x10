@@ -188,7 +188,6 @@ public class SmithWatermanParallalTaskDAG {
             async right = workerThread(i as Int, (j + 1n) as Int);
             async down = workerThread((i + 1n) as Int, j as Int);
             dignal = workerThread((i + 1n) as Int, (j + 1n) as Int);
-            }
         }
         if (right(2n) > max) {
             max = right(2n);
