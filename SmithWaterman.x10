@@ -273,6 +273,8 @@ public class SmithWaterman {
         Console.OUT.println(sw.GAP_EXTENSION_PANALTY);
 
         Console.OUT.println(sw.similarity(1n, 1n));
+        Console.OUT.println(sw.similarity(2n, 2n));
+        Console.OUT.println(sw.similarity(3n, 3n));
 
         Console.OUT.println("The max alignment score: ");
         Console.OUT.println(sw.getMaxScore());
