@@ -19,13 +19,13 @@ import x10.xrx.Runtime;
 
 public class SmithWatermanParallalBlockwise {
 
-    private val NUM_COLS_IN_BLOCK:Int = 16;
+    private val NUM_COLS_IN_BLOCK:Int = 16n;
     private val NUM_ROWS_IN_BLOCK:Int;
 
     private val NUM_BLOCKS_X:Int = Runtime.NTHREADS;
     private val NUM_BLOCKS_Y:Int;
 
-    private var finishStatus::Array_2[Int];
+    private var finishStatus:Array_2[Int];
 
     //two sequences of AA
     private val seq1:String;
@@ -126,8 +126,8 @@ public class SmithWatermanParallalBlockwise {
 
     public def buildMatrix() {
         var max:Int = -99999999n;
-        var maxi:Int = -1;
-        var maxj:Int = -1;
+        var maxi:Int = -1n;
+        var maxj:Int = -1n;
 
         //base case
         score(0, 0) = 0n;
@@ -171,7 +171,7 @@ public class SmithWatermanParallalBlockwise {
         var maxi:Int = -1n;
         var maxj:Int = -1n;
         if (id == 0n) {
-            for (i in 0n..this.(NUM_BLOCKS_Y - 1n)) {
+            for (i in 0n..(this.NUM_BLOCKS_Y - 1n)) {
                 var points:Rail[Int] = getBlockPosition(id, i);
                 var maxResult:Rail[Int] = diagnalCover(points(0n), points(1n), points(2n), points(3n));
                 if (maxResult(2n) > max) {
@@ -182,7 +182,7 @@ public class SmithWatermanParallalBlockwise {
                 this.finishStatus(id, i) = 1n;
             }
         } else {
-            for (i in 0n..this.(NUM_BLOCKS_Y - 1n)) {
+            for (i in 0n..(this.NUM_BLOCKS_Y - 1n)) {
                 when (this.finishStatus(id -1n, i) == 1n) {}
                 var points:Rail[Int] = getBlockPosition(id, i);
                 var maxResult:Rail[Int] = diagnalCover(points(0n), points(1n), points(2n), points(3n));
