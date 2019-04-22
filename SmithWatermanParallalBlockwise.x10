@@ -193,6 +193,7 @@ public class SmithWatermanParallalBlockwise {
                 Console.OUT.println(id + " " + i + " finished");
             }
         } else {
+            Console.OUT.println(id + " ready");
             for (i in 0n..(this.NUM_BLOCKS_Y - 1n)) {
                 Console.OUT.println(id + " " + i + " waiting");
                 when (this.finishStatus(id -1n, i) == 1n) {}
