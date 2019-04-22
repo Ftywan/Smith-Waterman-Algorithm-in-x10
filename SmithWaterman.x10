@@ -368,14 +368,14 @@ class BlosumReader {
             Console.OUT.println(chars(1));
             var pos:Int = 1n;
             for (j in 0n .. NUMOFSEQ) {
-                /*
+                
                 while (chars(j + pos) == "") {
                     pos ++;
-                }*/
+                }
                 this.BLOSUM62(i, j) = Int.parseInt(chars(j + pos).trim());
                 Console.OUT.println(i + " " + j + " " + this.BLOSUM62(i, j));
 
-                pos ++;
+                //pos ++;
             }
         }
 
