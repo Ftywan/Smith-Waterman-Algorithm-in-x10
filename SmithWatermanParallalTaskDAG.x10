@@ -95,20 +95,21 @@ public class SmithWatermanParallalTaskDAG {
 
         //this.NUM_ROWS_IN_BLOCK = Math.ceil((this.length1 as Double) / this.NUM_BLOCKS_X) as Int;
         //this.NUM_BLOCKS_Y = Math.ceil((this.length2 as Double) / this.NUM_BLOCKS_Y) as Int;
-        this.NUM_BLOCKS_X = length1 + 1;
-        this.NUM_BLOCKS_Y = length2 + 1;
-        this.finishStatus = new Array_2[Int](NUM_BLOCKS_X, NUM_BLOCKS_Y);
+        this.NUM_BLOCKS_X = length1 + 1n;
+        this.NUM_BLOCKS_Y = length2 + 1n;
+        this.finishStatus = new Array_2[Int](NUM_BLOCKS_X + 2, NUM_BLOCKS_Y + 2);
 
-        for (i in 0..(NUM_BLOCKS_X - 1)) {
-            for (j in 0..(NUM_BLOCKS_Y -1 )) {
-                finishStatus(i, j) = 0n;
-            }
-        }
+        //for (i in 0..(NUM_BLOCKS_X - 1)) {
+        //    for (j in 0..(NUM_BLOCKS_Y -1 )) {
+        //        finishStatus(i, j) = 0n;
+        //    }
+        //}
 
         for (i in 2..(NUM_BLOCKS_X - 1)) {
             finishStatus(1, i) = 2n;
             finishStatus(i, 1) = 2n;
         }
+        Console.OUT.println("hi");
     }
 
     public def similarity(i:Int, j:Int):Int {
@@ -155,7 +156,7 @@ public class SmithWatermanParallalTaskDAG {
             prevCells(0, j) = DR_ZERO;
         }
 
-        var point:Rail[Int] = workerThread(1, 1);
+        var point:Rail[Int] = workerThread(1n, 1n);
 
         //var point:Rail[Int] = diagnalCover(1n, 1n, length1, length2);
 
@@ -163,43 +164,70 @@ public class SmithWatermanParallalTaskDAG {
         this.maxj = point(1);
     }
 
-    public def workerThread(var i:Int, var j:Int) {
-        atomic finishStatus(i, j) = -1n;
+    public def workerThread(var i:Int, var j:Int):Rail[Int] {
+        //Console.OUT.print("");
         var myval:Int = calculateScore(i, j);
-        var right:Rail[Int];
-        var down:Rail[Int];
-        var dignal:Rail[Int];
         var max:Int = -999999n; 
         var maxi:Int = -1n;
         var maxj:Int = -1n;
+        if (i > length1 || j > length2) {
+            var point:Rail[Int] = [maxi, maxj, max];
+            return point;
+        }
+        atomic finishStatus(i, j) = -1n;
+        var right:Rail[Int] = [maxi, maxj, max];
+        var down:Rail[Int] = [maxi, maxj, max];
+        var dignal:Rail[Int] = [maxi, maxj, max];
+        var signalRight:Int = 0n;
+        var signalDown:Int = 0n;
+        var signalDignal:Int = 0n;
+        //var right:Rail[Int];
+        //var down:Rail[Int];
+        //var dignal:Rail[Int];
         finish {
-            atomic finishStatus(i, j + 1)++;
-            atomic finishStatus(i + 1, j)++;
-            atomic finishStatus(i + 1, j + 1)++;
-            if (finishStatus(i, j+1) == 3) {
-                async right = workerThread(i, j + 1);
+            atomic {
+                finishStatus(i, j + 1n)++;
+                if (finishStatus(i, j+1) == 3n) {
+                    signalRight = 1n;
+                }
             }
-            if (finishStatus(i+1, j) == 3) {
-                async down = workerThread(i + 1, j);
+            if (signalRight == 1n) {
+                async right = workerThread(i as Int, (j + 1n) as Int);
             }
-            if (finishStatus(i+1, j+1) == 3) {
-                async dignal = workerThread(i + 1, j + 1);
+            atomic {
+                finishStatus(i + 1n, j)++;
+                if (finishStatus(i+1, j) == 3n) {
+                    signalDown = 1n;
+                }
             }
+            if (signalDown == 1n) {
+                async down = workerThread((i + 1n) as Int, j as Int);
+            }
+            atomic {
+                finishStatus(i + 1n, j + 1n)++;
+                if (finishStatus(i+1, j+1) == 3n) {
+                    signalDignal = 1n;
+                }
+            }
+            if (signalDignal == 1n) {
+                async dignal = workerThread((i + 1n) as Int, (j + 1n) as Int);
+            }
+            //dignal = workerThread((i + 1n) as Int, (j + 1n) as Int);
         }
-        if (right(2) > max) {
-            max = right(2);
-            maxi = right(0);
-            maxj = right(1);
+        if (right(2n) > max) {
+            max = right(2n);
+            maxi = right(0n);
+            maxj = right(1n);
         }
-        if (down(2) > max) {
-            max = down(2);
-            maxi = down(0);
-            maxj = down(1);
+        if (down(2n) > max) {
+            max = down(2n);
+            maxi = down(0n);
+            maxj = down(1n);
         }
-        if (dignal(2) > max) {
-            max = dignal(2);
-            maxi = dignal(0);
-            maxj = dignal(1);
+        if (dignal(2n) > max) {
+            max = dignal(2n);
+            maxi = dignal(0n);
+            maxj = dignal(1n);
         }
         if (myval > max) {
             max = myval;
@@ -208,23 +236,6 @@ public class SmithWatermanParallalTaskDAG {
         }
         var point:Rail[Int] = [maxi, maxj, max];
         return point;
-    }
-
-    public def workerThread(var id:Int) {
-        if (id == 0) {
-            for (i in 0..this.(NUM_BLOCKS_Y - 1n)) {
-                var points:Rail[Int] = getBlockPosition(id, i);
-                diagnalCover(points(0n), points(1n), points(2n), points(3n));
-                this.finishStatus(id, i) = 1n;
-            }
-        } else {
-            for (i in 0..this.(NUM_BLOCKS_Y - 1n)) {
-                when (this.finishStatus(id -1n, i) == 1n) {}
-                var points:Rail[Int] = getBlockPosition(id, i);
-                diagnalCover(points(0n), points(1n), points(2n), points(3n));
-                this.finishStatus(id, i) = 1n;
-            }
-        }
     }
 
     public def diagnalCover(var a1:Int, var b1:Int, var a2:Int, var b2:Int):Rail[Int] {
