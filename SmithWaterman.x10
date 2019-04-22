@@ -366,7 +366,7 @@ class BlosumReader {
             Console.OUT.println(line);
             chars = line.split(" ");
             Console.OUT.println(chars(1));
-            var pos = 1n;
+            var pos:Int = 1n;
             for (j in 0n .. NUMOFSEQ) {
                 while (chars(j + pos) == "") {
                     pos ++;
