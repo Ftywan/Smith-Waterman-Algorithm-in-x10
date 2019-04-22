@@ -17,12 +17,12 @@ import x10.xrx.Runtime;
 
 
 
-public class SmithWatermanParallalBlockwise {
+public class SmithWatermanParallalTaskDAG {
 
-    private val NUM_COLS_IN_BLOCK:Int = 16;
-    private val NUM_ROWS_IN_BLOCK:Int;
+    private val NUM_COLS_IN_BLOCK:Int = 1;
+    private val NUM_ROWS_IN_BLOCK:Int = 1;
 
-    private val NUM_BLOCKS_X:Int = Runtime.NTHREADS;
+    private val NUM_BLOCKS_X:Int;
     private val NUM_BLOCKS_Y:Int;
 
     private var finishStatus::Array_2[Int];
@@ -93,15 +93,21 @@ public class SmithWatermanParallalBlockwise {
         scoreUp = new Array_2[Int](length1 + 1, length2 + 1);
         prevCells = new Array_2[Int](length1 + 1, length2 + 1);
 
-        this.NUM_ROWS_IN_BLOCK = Math.ceil((this.length1 as Double) / this.NUM_BLOCKS_X) as Int;
-        this.NUM_BLOCKS_Y = Math.ceil((this.length2 as Double) / this.NUM_BLOCKS_Y) as Int;
-
+        //this.NUM_ROWS_IN_BLOCK = Math.ceil((this.length1 as Double) / this.NUM_BLOCKS_X) as Int;
+        //this.NUM_BLOCKS_Y = Math.ceil((this.length2 as Double) / this.NUM_BLOCKS_Y) as Int;
+        this.NUM_BLOCKS_X = length1 + 1;
+        this.NUM_BLOCKS_Y = length2 + 1;
         this.finishStatus = new Array_2[Int](NUM_BLOCKS_X, NUM_BLOCKS_Y);
 
         for (i in 0..(NUM_BLOCKS_X - 1)) {
             for (j in 0..(NUM_BLOCKS_Y -1 )) {
                 finishStatus(i, j) = 0;
             }
+        }
+
+        for (i in 2..(NUM_BLOCKS_X - 1)) {
+            finishStatus(1, i) = 2;
+            finishStatus(i, 1) = 2;
         }
     }
 
@@ -125,9 +131,7 @@ public class SmithWatermanParallalBlockwise {
     }
 
     public def buildMatrix() {
-        var max:Int = -99999999n;
-        var maxi:Int = -1;
-        var maxj:Int = -1;
+
 
         //base case
         score(0, 0) = 0n;
@@ -151,51 +155,76 @@ public class SmithWatermanParallalBlockwise {
             prevCells(0, j) = DR_ZERO;
         }
 
-        finish for (i in 0..(this.NUM_BLOCKS_X - 1)) async {
-                var maxResult:Rail[Int] = workerThread(i);
-                if (maxResult(2) > max) {
-                    max = maxResult(2);
-                    maxi = maxResult(0);
-                    maxj = maxResult(1);
-                }
-        }
+        var point:Rail[Int] = workerThread(1, 1);
 
         //var point:Rail[Int] = diagnalCover(1n, 1n, length1, length2);
 
-        this.maxi = maxi;
-        this.maxj = maxj;
+        this.maxi = point(0);
+        this.maxj = point(1);
     }
 
-    public def workerThread(var id:Int):Rail[Int] {
-        var max:Int = -99999999n;
-        var maxi:Int = -1;
-        var maxj:Int = -1;
-        if (id == 0) {
-            for (i in 0..this.(NUM_BLOCKS_Y - 1)) {
-                var points:Rail[Int] = getBlockPosition(id, i);
-                var maxResult:Rail[Int] = diagnalCover(points(0), points(1), points(2), points(3));
-                if (maxResult(2) > max) {
-                    max = maxResult(2);
-                    maxi = maxResult(0);
-                    maxj = maxResult(1);
-                }
-                this.finishStatus(id, i) = 1;
+    public def workerThread(var i:Int, var j:Int) {
+        atomic finishStatus(i, j) = -1n;
+        var myval:Int = calculateScore(i, j);
+        var right:Rail[Int];
+        var down:Rail[Int];
+        var dignal:Rail[Int];
+        var max:Int = -999999n; 
+        var maxi:Int = -1n;
+        var maxj:Int = -1n;
+        finish {
+            atomic finishStatus(i, j + 1)++;
+            atomic finishStatus(i + 1, j)++;
+            atomic finishStatus(i + 1, j + 1)++;
+            if (finishStatus(i, j+1) == 3) {
+                right = async workerThread(i, j + 1);
             }
-        } else {
-            for (i in 0..this.(NUM_BLOCKS_Y - 1)) {
-                when (this.finishStatus(id -1, i) == 1) {}
-                var points:Rail[Int] = getBlockPosition(id, i);
-                var maxResult:Rail[Int] = diagnalCover(points(0), points(1), points(2), points(3));
-                if (maxResult(2) > max) {
-                    max = maxResult(2);
-                    maxi = maxResult(0);
-                    maxj = maxResult(1);
-                }
-                this.finishStatus(id, i) = 1;
+            if (finishStatus(i+1, j) == 3) {
+                down = async workerThread(i + 1, j);
             }
+            if (finishStatus(i+1, j+1) == 3) {
+                dignal = async workerThread(i + 1, j + 1);
+            }
+        }
+        if (right(2) > max) {
+            max = right(2);
+            maxi = right(0);
+            maxj = right(1);
+        }
+        if (down(2) > max) {
+            max = down(2);
+            maxi = down(0);
+            maxj = down(1);
+        }
+        if (dignal(2) > max) {
+            max = dignal(2);
+            maxi = dignal(0);
+            maxj = dignal(1);
+        }
+        if (myval > max) {
+            max = myval;
+            maxi = i;
+            maxj = j;
         }
         var point:Rail[Int] = [maxi, maxj, max];
         return point;
+    }
+
+    public def workerThread(var id:Int) {
+        if (id == 0) {
+            for (i in 0..this.(NUM_BLOCKS_Y - 1n)) {
+                var points:Rail[Int] = getBlockPosition(id, i);
+                diagnalCover(points(0n), points(1n), points(2n), points(3n));
+                this.finishStatus(id, i) = 1n;
+            }
+        } else {
+            for (i in 0..this.(NUM_BLOCKS_Y - 1n)) {
+                when (this.finishStatus(id -1n, i) == 1n) {}
+                var points:Rail[Int] = getBlockPosition(id, i);
+                diagnalCover(points(0n), points(1n), points(2n), points(3n));
+                this.finishStatus(id, i) = 1n;
+            }
+        }
     }
 
     public def diagnalCover(var a1:Int, var b1:Int, var a2:Int, var b2:Int):Rail[Int] {
@@ -465,7 +494,7 @@ public class SmithWatermanParallalBlockwise {
         val extPanalty:Int = Int.parse(param(4n));
 
 
-        val sw:SmithWatermanParallalBlockwise = new SmithWatermanParallalBlockwise(fasta1, fasta2, match, openPanalty, extPanalty);
+        val sw:SmithWatermanParallalTaskDAG = new SmithWatermanParallalTaskDAG(fasta1, fasta2, match, openPanalty, extPanalty);
         sw.buildMatrix();
         //sw.printMatrix();
 
