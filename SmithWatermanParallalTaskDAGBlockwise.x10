@@ -19,8 +19,8 @@ import x10.xrx.Runtime;
 
 public class SmithWatermanParallalTaskDAGBlockwise {
 
-    private val NUM_COLS_IN_BLOCK:Int = 32;
-    private val NUM_ROWS_IN_BLOCK:Int = 32;
+    private val NUM_COLS_IN_BLOCK:Int = 32n;
+    private val NUM_ROWS_IN_BLOCK:Int = 32n;
 
     private val NUM_BLOCKS_X:Int;
     private val NUM_BLOCKS_Y:Int;
