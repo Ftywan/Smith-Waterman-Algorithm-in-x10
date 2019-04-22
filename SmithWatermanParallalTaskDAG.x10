@@ -99,16 +99,17 @@ public class SmithWatermanParallalTaskDAG {
         this.NUM_BLOCKS_Y = length2 + 1n;
         this.finishStatus = new Array_2[Int](NUM_BLOCKS_X, NUM_BLOCKS_Y);
 
-        for (i in 0..(NUM_BLOCKS_X - 1)) {
-            for (j in 0..(NUM_BLOCKS_Y -1 )) {
-                finishStatus(i, j) = 0n;
-            }
-        }
+        //for (i in 0..(NUM_BLOCKS_X - 1)) {
+        //    for (j in 0..(NUM_BLOCKS_Y -1 )) {
+        //        finishStatus(i, j) = 0n;
+        //    }
+        //}
 
         for (i in 2..(NUM_BLOCKS_X - 1)) {
             finishStatus(1, i) = 2n;
             finishStatus(i, 1) = 2n;
         }
+        Console.OUT.println("hi");
     }
 
     public def similarity(i:Int, j:Int):Int {
@@ -164,6 +165,7 @@ public class SmithWatermanParallalTaskDAG {
     }
 
     public def workerThread(var i:Int, var j:Int):Rail[Int] {
+        Console.OUT.println(i + " " + j);
         atomic finishStatus(i, j) = -1n;
         var myval:Int = calculateScore(i, j);
         var right:Rail[Int] = new Rail[Int]();
