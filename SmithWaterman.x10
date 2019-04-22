@@ -92,7 +92,7 @@ public class SmithWaterman {
             if (seqToNum.containsKey(char2)) {
                 return blosum62(23n, seqToNum.get(char2));
             } else {
-                return blosum62(seqToNum.get(23n, 23n);
+                return blosum62(23n, 23n);
             }
         }
     }
