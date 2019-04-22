@@ -306,10 +306,10 @@ public class SmithWatermanParallalBlockwise {
         scoreUp(i, j) = Math.max(newOpenGapUpScore,newExtentionGapUpScore);
 
 
-        //var upScore:Int = scoreUp(i, j);
-        //var leftScore:Int = scoreLeft(i, j);
-        var leftScore:Int = scoreUp(i, j);
-        var upScore:Int = scoreLeft(i, j);
+        var upScore:Int = scoreUp(i, j);
+        var leftScore:Int = scoreLeft(i, j);
+        //var leftScore:Int = scoreUp(i, j);
+        //var upScore:Int = scoreLeft(i, j);
 
         //score(i, j) = Math.max(diagScore, Math.max(upScore, Math.max(leftScore, 0n)));
         score(i, j) = Math.max(diagScore, Math.max(upScore, Math.max(leftScore, 0n)));
@@ -399,6 +399,7 @@ public class SmithWatermanParallalBlockwise {
                 //if (score(i-1n, j-1n)>0n) {i--;j--;}
                 //else     break;             
             } else {
+                Console.OUT.println("value when exit:" + score(i, j));
                 break;
             }
         }
