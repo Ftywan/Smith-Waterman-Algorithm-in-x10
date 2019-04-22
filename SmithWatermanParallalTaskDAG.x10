@@ -178,6 +178,9 @@ public class SmithWatermanParallalTaskDAG {
         var right:Rail[Int] = [maxi, maxj, max];
         var down:Rail[Int] = [maxi, maxj, max];
         var dignal:Rail[Int] = [maxi, maxj, max];
+        var signalRight:Int = 0n;
+        var signalDown:Int = 0n;
+        var signalDignal:Int = 0n;
         //var right:Rail[Int];
         //var down:Rail[Int];
         //var dignal:Rail[Int];
@@ -185,17 +188,30 @@ public class SmithWatermanParallalTaskDAG {
             atomic {
                 finishStatus(i, j + 1n)++;
                 if (finishStatus(i, j+1) == 3n) {
-                    Console.OUT.println("aa");
+                    signalRight = 1n;
                 }
             }
-            if (finishStatus(i, j+1) == 3n) {
+            if (signalRight == 1n) {
                 async right = workerThread(i as Int, (j + 1n) as Int);
             }
-            atomic finishStatus(i + 1n, j)++;
-            if (finishStatus(i, j+1) == 3n) {
+            atomic {
+                finishStatus(i + 1n, j)++;
+                if (finishStatus(i+1, j) == 3n) {
+                    signalDown = 1n;
+                }
+            }
+            if (signalDown == 1n) {
                 async down = workerThread((i + 1n) as Int, j as Int);
             }
-            atomic finishStatus(i + 1n, j + 1n)++;
+            atomic {
+                finishStatus(i + 1n, j + 1n)++;
+                if (finishStatus(i+1, j+1) == 3n) {
+                    signalDignal = 1n;
+                }
+            }
+            if (signalDignal == 1n) {
+                async dignal = workerThread((i + 1n) as Int, (j + 1n) as Int);
+            }
             //dignal = workerThread((i + 1n) as Int, (j + 1n) as Int);
         }
         if (right(2n) > max) {
