@@ -188,8 +188,8 @@ public class SmithWaterman {
         scoreUp(i, j) = Math.max(newOpenGapUpScore,newExtentionGapUpScore);
 
 
-        var upScore:Int = scoreUp(i, j-1);
-        var leftScore:Int = scoreLeft(i-1, j);
+        var upScore:Int = scoreUp(i, j);
+        var leftScore:Int = scoreLeft(i, j);
 
         //score(i, j) = Math.max(diagScore, Math.max(upScore, Math.max(leftScore, 0n)));
         score(i, j) = Math.max(diagScore, Math.max(upScore, Math.max(leftScore, 0n)));
