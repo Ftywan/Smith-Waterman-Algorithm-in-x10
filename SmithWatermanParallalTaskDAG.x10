@@ -19,13 +19,13 @@ import x10.xrx.Runtime;
 
 public class SmithWatermanParallalTaskDAG {
 
-    private val NUM_COLS_IN_BLOCK:Int = 1;
-    private val NUM_ROWS_IN_BLOCK:Int = 1;
+    private val NUM_COLS_IN_BLOCK:Int = 1n;
+    private val NUM_ROWS_IN_BLOCK:Int = 1n;
 
     private val NUM_BLOCKS_X:Int;
     private val NUM_BLOCKS_Y:Int;
 
-    private var finishStatus::Array_2[Int];
+    private var finishStatus:Array_2[Int];
 
     //two sequences of AA
     private val seq1:String;
@@ -101,13 +101,13 @@ public class SmithWatermanParallalTaskDAG {
 
         for (i in 0..(NUM_BLOCKS_X - 1)) {
             for (j in 0..(NUM_BLOCKS_Y -1 )) {
-                finishStatus(i, j) = 0;
+                finishStatus(i, j) = 0n;
             }
         }
 
         for (i in 2..(NUM_BLOCKS_X - 1)) {
-            finishStatus(1, i) = 2;
-            finishStatus(i, 1) = 2;
+            finishStatus(1, i) = 2n;
+            finishStatus(i, 1) = 2n;
         }
     }
 
@@ -177,13 +177,13 @@ public class SmithWatermanParallalTaskDAG {
             atomic finishStatus(i + 1, j)++;
             atomic finishStatus(i + 1, j + 1)++;
             if (finishStatus(i, j+1) == 3) {
-                right = async workerThread(i, j + 1);
+                async right = workerThread(i, j + 1);
             }
             if (finishStatus(i+1, j) == 3) {
-                down = async workerThread(i + 1, j);
+                async down = workerThread(i + 1, j);
             }
             if (finishStatus(i+1, j+1) == 3) {
-                dignal = async workerThread(i + 1, j + 1);
+                async dignal = workerThread(i + 1, j + 1);
             }
         }
         if (right(2) > max) {
