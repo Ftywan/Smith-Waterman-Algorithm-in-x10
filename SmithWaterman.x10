@@ -252,7 +252,11 @@ public class SmithWaterman {
 
         val Console.OUT.println("IO debug");
         val Console.OUT.println(fasta1);
+<<<<<<< HEAD
         val Console.OUT.println(fasta2);
+=======
+                val Console.OUT.println(fasta2);
+>>>>>>> master
         val Console.OUT.println(match);
         val Console.OUT.println(openPanalty);
         val Console.OUT.println(extPanalty);
