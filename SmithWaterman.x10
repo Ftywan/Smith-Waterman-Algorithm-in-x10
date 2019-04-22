@@ -246,7 +246,7 @@ public class SmithWaterman {
                 maxJ = j;
             } 
         }
-        var endPoint:Rail[Int] = traceback(i, maxJ);
+        var endPoint:Rail[Int] = traceback(length1, maxJ);
         var result:Rail[Int] = [endPoint(3n), endPoint(4n)];
         return result;
     }
