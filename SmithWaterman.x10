@@ -250,6 +250,14 @@ public class SmithWaterman {
         val openPanalty:Int = Int.parse(param(3n));
         val extPanalty:Int = Int.parse(param(4n));
 
+        val Console.OUT.println("IO debug");
+        val Console.OUT.println(fasta1);
+                val Console.OUT.println(fasta2);
+        val Console.OUT.println(match);
+        val Console.OUT.println(openPanalty);
+        val Console.OUT.println(extPanalty);
+
+
         val sw:SmithWaterman = new SmithWaterman(fasta1, fasta2, match, openPanalty, extPanalty);
         sw.buildMatrix();
 
