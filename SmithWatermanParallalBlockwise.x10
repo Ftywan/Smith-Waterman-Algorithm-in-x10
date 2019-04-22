@@ -238,13 +238,13 @@ public class SmithWatermanParallalBlockwise {
         if(i == NUM_BLOCKS_X-1n) {
             rightI = length1;
         }else {
-            rightI = (i + 1n) * NUM_ROWS_IN_BLOCK + 1n;
+            rightI = (i + 1n) * NUM_ROWS_IN_BLOCK;
         }
 
         if(j == NUM_BLOCKS_Y-1n) {
             rightJ = length2;
         }else {
-            rightJ = (j + 1n) * NUM_COLS_IN_BLOCK + 1n;
+            rightJ = (j + 1n) * NUM_COLS_IN_BLOCK;
         }
 
         position = [leftI, leftJ, rightI, rightJ];
