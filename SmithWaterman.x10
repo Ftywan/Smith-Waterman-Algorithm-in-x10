@@ -248,7 +248,7 @@ public class SmithWaterman {
                 gap ++;
                 traceSTR1(str1len) = '-';
                 str1len ++;
-                traceSTR2(str1len) = seq2.charAt(j-1n);
+                traceSTR2(str2len) = seq2.charAt(j-1n);
                 str2len ++;
                 j--;
                 //if (score(i-1n, j)>0n) i--;
@@ -259,7 +259,7 @@ public class SmithWaterman {
                 gap ++;
                 traceSTR1(str1len) = seq1.charAt(i-1n);
                 str1len ++;
-                traceSTR2(str1len) = '-';
+                traceSTR2(str2len) = '-';
                 str2len ++;
                 i--;
 //          return traceback(i, j-1);
@@ -270,7 +270,7 @@ public class SmithWaterman {
                 num ++;
                 match ++;
                 traceSTR1(str1len) = seq1.charAt(i-1n);
-                traceSTR2(str1len) = seq2.charAt(j-1n);
+                traceSTR2(str2len) = seq2.charAt(j-1n);
                 str1len ++;
                 str2len ++;
                 j--;
