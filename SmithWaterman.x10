@@ -65,6 +65,8 @@ public class SmithWaterman {
         this.length1 = seq1.length();
         this.length2 = seq2.length();
 
+        Console.OUT.println(length1);
+
         this.GAP_OPENING_PANALTY = openPanalty;
         this.GAP_EXTENSION_PANALTY = extensionPanalty;
 
@@ -206,6 +208,8 @@ public class SmithWaterman {
         var num:Int = 0n;
         var match:Int = 0n;
         var gap:Int = 0n;
+        var traceSTR1:Rail[Byte] = new Rail[Byte](Math.max(length1, length2) + 10);
+        var traceSTR2:Rail[Byte] = new Rail[Byte](Math.max(length1, length2) + 10);
 
         //find the direction to traceback
         while (true)
