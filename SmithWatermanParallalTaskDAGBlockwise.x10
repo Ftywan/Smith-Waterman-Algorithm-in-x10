@@ -215,7 +215,7 @@ public class SmithWatermanParallalTaskDAGBlockwise {
         }
         var points:Rail[Int] = getBlockPosition(i, j);
         var result:Rail[Int] = diagnalCover(points(0n), points(1n), points(2n), points(3n));
-        Console.OUT.println("working on:" + points(0n) + " " + points(1n) + " " + points(2n) + " " + points(3n));
+        Console.OUT.println("working on:" + i + " " + j + " " +points(0n) + " " + points(1n) + " " + points(2n) + " " + points(3n));
         var myval:Int = result(2n);
         var mymaxi:Int = result(0n);
         var mymaxj:Int = result(1n);
