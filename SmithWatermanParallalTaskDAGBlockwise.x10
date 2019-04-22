@@ -232,7 +232,7 @@ public class SmithWatermanParallalTaskDAGBlockwise {
         finish {
             atomic {
                 finishStatus(i, j + 1n)++;
-                Console.OUT.println(finishStatus(i, j + 1n));
+                //Console.OUT.println(finishStatus(i, j + 1n));
                 if (finishStatus(i, j+1) == 3n) {
                     signalRight = 1n;
                     finishStatus(i, j+1) = -1n;
