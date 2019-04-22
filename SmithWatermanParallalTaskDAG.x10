@@ -163,7 +163,7 @@ public class SmithWatermanParallalTaskDAG {
         this.maxj = point(1);
     }
 
-    public def workerThread(var i:Int, var j:Int) {
+    public def workerThread(var i:Int, var j:Int):Rail[Int] {
         atomic finishStatus(i, j) = -1n;
         var myval:Int = calculateScore(i, j);
         var right:Rail[Int];
