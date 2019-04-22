@@ -233,6 +233,7 @@ public class SmithWaterman {
     public def traceback(var i:Int, var j:Int):Rail[Int] {
         var num:Int = 0n;
         var match:Int = 0n;
+        var identity:Int = 0n;
         var gap:Int = 0n;
         var traceSTR1:Rail[Char] = new Rail[Char](Math.max(length1, length2)*2);
         var traceSTR2:Rail[Char] = new Rail[Char](Math.max(length1, length2)*2);
@@ -267,6 +268,9 @@ public class SmithWaterman {
                 //else    break;              
             }
             if ((prevCells(i, j) & DR_DIAG) > 0n) {
+                if (seq1.charAt(i-1n) == seq2.charAt(j-1n)) {
+                    identity ++;
+                }
                 num ++;
                 match ++;
                 traceSTR1(str1len) = seq1.charAt(i-1n);
@@ -289,7 +293,7 @@ public class SmithWaterman {
         }
 
         this.lengthOut = str1len;
-        var point:Rail[Int] = [i, j, num, match, gap];
+        var point:Rail[Int] = [i, j, num, match, gap, identity];
         return point;
     }
 
@@ -339,7 +343,7 @@ public class SmithWaterman {
         */
         //var endPoint:Rail[Int] = traceback(length1, maxJ);
         var endPoint:Rail[Int] = traceback(this.maxi, this.maxj);
-        var result:Rail[Int] = [endPoint(3n), endPoint(4n)];
+        var result:Rail[Int] = [endPoint(3n), endPoint(4n), endPoint(5n), endPoint(2n)];
         return result;
     }
 
@@ -400,28 +404,25 @@ public class SmithWaterman {
         sw.buildMatrix();
         //sw.printMatrix();
 
-        Console.OUT.println("IO debug");
+        //Console.OUT.println("IO debug");
         //Console.OUT.println(sw.seq1);
         //Console.OUT.println(sw.seq2);
         //Console.OUT.println(sw.blosumFileName);
         //Console.OUT.println(sw.GAP_OPENING_PANALTY);
         //Console.OUT.println(sw.GAP_EXTENSION_PANALTY);
-
-        Console.OUT.println("The max alignment score: ");
-        Console.OUT.println(sw.getMaxScore());
-
-        Console.OUT.println("Matches: ");
-        //Console.OUT.println(sw.getMatchNumber());
         var result:Rail[Int] = sw.getMatchGap();
-        Console.OUT.println(result(0));
-        Console.OUT.println("Gaps: ");
-        Console.OUT.println(result(1));
 
-        Console.OUT.println("Str1: ");
+        Console.OUT.print("Identity: " + result(2) + "/" + result(3) + " (" + ((double)result(2) / result(3)) + ")");
+
+        Console.OUT.print("Gaps: " + result(1) + "/" + result(3) + " (" + ((double)result(1) / result(3)) + ")");
+
+        Console.OUT.print("Score: " + sw.getMaxScore());
+
+        Console.OUT.print("1: ");
         sw.printStr1();
         Console.OUT.println("\n");
 
-        Console.OUT.println("Str2: ");
+        Console.OUT.print("2: ");
         sw.printStr2();
         Console.OUT.println("\n");
 
