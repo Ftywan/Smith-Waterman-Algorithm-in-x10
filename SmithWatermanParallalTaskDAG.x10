@@ -175,7 +175,7 @@ public class SmithWatermanParallalTaskDAG {
         var maxi:Int = -1n;
         var maxj:Int = -1n;
         if (i > length1 || j > length2) {
-            var point:Rail[Int] = [-1n, -1n, -1n];
+            var point:Rail[Int] = [max, maxi, maxj];
             return point;
         }
         finish {
