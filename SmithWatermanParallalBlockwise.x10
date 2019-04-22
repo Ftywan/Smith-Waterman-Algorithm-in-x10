@@ -161,6 +161,7 @@ public class SmithWatermanParallalBlockwise {
 
         finish for (i in 0n..(this.NUM_BLOCKS_X - 1n)) async {
                 var maxResult:Rail[Int] = workerThread(i);
+                Console.OUT.println(i + " returned.");
                 if (maxResult(2n) > max) {
                     max = maxResult(2n);
                     maxi = maxResult(0n);
