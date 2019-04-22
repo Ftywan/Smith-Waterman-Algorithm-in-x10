@@ -2,6 +2,7 @@ package smithwatermanalgo;
 import x10.lang.String;
 import x10.io.Console;
 import x10.io.File;
+import x10.io.EOFException;
 import x10.util.StringBuilder;
 import x10.io.FileReader;
 import x10.lang.Exception;
@@ -404,113 +405,80 @@ class FastaReader {
 }
 
 class BlosumReader {
-    private var BLOSUM62: Array_2[Int];
-    private val SeqToNum: HashMap[Char, Int];
-    private val NumToSeq: HashMap[Int, String];
-    private val NUMOFSEQ: Int = 23n;
+    public var BLOSUM62: Array_2[Int];
+    private var SeqToNum: HashMap[Char, Int];
+    private var NumToSeq: HashMap[Int, Char];
+    private var NUMOFSEQ: Int = 23n;
 
     public def this(blosumFileName: String) {
-        this.SeqToNum = this.initSeqToNum();
-        this.NumToSeq = this.initNumToSeq();
         this.BLOSUM62 = new Array_2[Int](NUMOFSEQ + 1n, NUMOFSEQ + 1n);
         this.readBlosumFile(blosumFileName);
     }
+
 
     private def readBlosumFile(blosumFileName: String) {
         val fastaFile: File = new File(blosumFileName);
         val fastaReader: FileReader = fastaFile.openRead();
         val header: String = fastaReader.readLine().trim();
+        this.initSeqToNum(header);
         var line: String = null;
-        var chars: Rail[String] = new Rail[String](NUMOFSEQ + 1n);
+        var chars: Rail[String];
         for (i in 0n .. (NUMOFSEQ)) {
-            line = fastaReader.readLine().trim();
-            //Console.OUT.println(line);
-            chars = line.split(" ");
-            //Console.OUT.println(chars(1));
-            var pos:Int = 1n;
-            for (j in 0n .. NUMOFSEQ) {
+            try {
+                line = fastaReader.readLine().trim();
+           
                 
-                while (chars(j + pos).equals("")) {
-                    pos ++;
+            } catch (e: EOFException) {
+                break;
+            }
+            chars = line.substring(1n).trim().split(" ");
+            
+            var pointer: Int = 0n;
+            for (j in 0n .. (chars.size - 1n)) {
+                if (chars(j).equals(" ") || chars(j).length() <= 0) {
+                    continue;
+                } else {
+                    this.BLOSUM62(i, pointer) = Int.parseInt(chars(j));
+                   
+                    pointer++;
                 }
-
-                this.BLOSUM62(i, j) = Int.parseInt(chars(j + pos).trim());
-                //Console.OUT.println(i + " " + j + " " + this.BLOSUM62(i, j) + " char:"+ chars(j + pos) + ";");
-
-                //pos ++;
             }
         }
-
+        
     }
 
-    private def initSeqToNum(): HashMap[Char, Int] {
-        val map:HashMap[Char, Int] = new HashMap[Char, Int]();
-        map.put('A', 0n);
-        map.put('R', 1n);
-        map.put('N', 2n);
-        map.put('D', 3n);
-        map.put('C', 4n);
-        map.put('Q', 5n);
-        map.put('E', 6n);
-        map.put('G', 7n);
-        map.put('H', 8n);
-        map.put('I', 9n);
-        map.put('L', 10n);
-        map.put('K', 11n);
-        map.put('M', 12n);
-        map.put('F', 13n);
-        map.put('P', 14n);
-        map.put('S', 15n);
-        map.put('T', 16n);
-        map.put('W', 17n);
-        map.put('Y', 18n);
-        map.put('V', 19n);
-        map.put('B', 20n);
-        map.put('Z', 21n);
-        map.put('X', 22n);
-        return map;
-    }
-
-    private def initNumToSeq(): HashMap[Int, String] {
-        val map:HashMap[Int, String] = new HashMap[Int, String]();
-        map.put(0n, "A");
-        map.put(1n, "R");
-        map.put(2n, "N");
-        map.put(3n, "D");
-        map.put(4n, "C");
-        map.put(5n, "Q");
-        map.put(6n, "E");
-        map.put(7n, "G");
-        map.put(8n, "H");
-        map.put(9n, "I");
-        map.put(10n, "L");
-        map.put(11n, "K");
-        map.put(12n, "M");
-        map.put(13n, "F");
-        map.put(14n, "P");
-        map.put(15n, "S");
-        map.put(16n, "T");
-        map.put(17n, "W");
-        map.put(18n, "Y ");
-        map.put(19n, "V");
-        map.put(20n, "B");
-        map.put(21n, "Z");
-        map.put(22n, "X");
-        return map;
+    private def initSeqToNum(header:String) {
+        this.SeqToNum = new HashMap[Char, Int]();
+        this.NumToSeq = new HashMap[Int, Char]();
+        var chars: Rail[String] = header.split(" ");
+        var value: Int = 0n;
+        for (i in (0n .. (chars.size - 1n))) {
+            if (chars(i).equals(" ")) {
+                continue;
+            } else {
+                SeqToNum.put(chars(i).charAt(0n), value);
+                NumToSeq.put(value, chars(i).charAt(0n));
+            }
+            value++;
+        }
+        this.NUMOFSEQ = value;
+        
     }
 
     public def getSeqToNum(): HashMap[Char, Int] {
         return this.SeqToNum;
     }
 
-    public def getNumToSeq(): HashMap[Int, String] {
+    public def getNumToSeq(): HashMap[Int, Char] {
         return this.NumToSeq;
     }
 
     public def getBlosum62(): Array_2[Int] {
         return this.BLOSUM62;
     }
+
 }
+
 
 
 
