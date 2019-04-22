@@ -130,23 +130,29 @@ public class SmithWatermanParallalBlockwise {
 
         //base case
         score(0, 0) = 0n;
-        scoreLeft(0, 0) = -9999990n;
-        scoreLeft(0, 0) = -9999990n;
+        //scoreLeft(0, 0) = -9999990n;
+        //scoreLeft(0, 0) = -9999990n;
+        scoreLeft(0, 0) = 0n;
+        scoreLeft(0, 0) = 0n;
         prevCells(0,0) = DR_ZERO;
 
         //the first row
         for(i in 1..length1) {
             score(i, 0) = 0n;
-            scoreLeft(i, 0) = -9999990n;
-            scoreUp(i, 0) = -9999990n;
+            //scoreLeft(i, 0) = -9999990n;
+            //scoreUp(i, 0) = -9999990n;
+            scoreLeft(i, 0) = 0n;
+            scoreUp(i, 0) = 0n;
             prevCells(i, 0) = DR_ZERO;
         }
 
         //the first column
         for(j in 1..length2) {
             score(0, j) = 0n;
-            scoreLeft(0, j) = -9999990n;
-            scoreUp(0, j) = -9999990n;
+            //scoreLeft(0, j) = -9999990n;
+            //scoreUp(0, j) = -9999990n;
+            scoreLeft(0, j) = 0n;
+            scoreUp(0, j) = 0n;
             prevCells(0, j) = DR_ZERO;
         }
 
