@@ -187,7 +187,7 @@ public class SmithWatermanParallalTaskDAG {
                 async right = workerThread(i as Int, (j + 1n) as Int);
             }
             atomic finishStatus(i + 1n, j)++;
-            if (finishStatus(i, j+1 == 3n)) {
+            if (finishStatus(i, j+1) == 3n) {
                 async down = workerThread((i + 1n) as Int, j as Int);
             }
             atomic finishStatus(i + 1n, j + 1n)++;
