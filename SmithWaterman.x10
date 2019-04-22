@@ -245,9 +245,9 @@ public class SmithWaterman {
             if ((prevCells(i, j) & DR_LEFT) > 0n) {
                 num ++;
                 gap ++;
-                traceSTR1[str1len] = '-';
+                traceSTR1(str1len) = '-';
                 str1len ++;
-                traceSTR2[str1len] = seq2.charAt(j-1n);
+                traceSTR2(str1len) = seq2.charAt(j-1n);
                 str2len ++;
                 j--;
                 //if (score(i-1n, j)>0n) i--;
@@ -256,9 +256,9 @@ public class SmithWaterman {
             if ((prevCells(i, j) & DR_UP) > 0n) {
                 num ++;
                 gap ++;
-                traceSTR1[str1len] = seq1.charAt(i-1n);
+                traceSTR1(str1len) = seq1.charAt(i-1n);
                 str1len ++;
-                traceSTR2[str1len] = '-';
+                traceSTR2(str1len) = '-';
                 str2len ++;
                 i--;
 //          return traceback(i, j-1);
@@ -268,8 +268,8 @@ public class SmithWaterman {
             if ((prevCells(i, j) & DR_DIAG) > 0n) {
                 num ++;
                 match ++;
-                traceSTR1[str1len] = seq1.charAt(i-1n);
-                traceSTR2[str1len] = seq2.charAt(j-1n);
+                traceSTR1(str1len) = seq1.charAt(i-1n);
+                traceSTR2(str1len) = seq2.charAt(j-1n);
                 str1len ++;
                 str2len ++;
                 j--;
@@ -283,8 +283,8 @@ public class SmithWaterman {
         }
 
         for (i in 0..(str1len-1)) {
-            outstr1arr[str1len - i - 1] = traceSTR1[i];
-            outstr2arr[str1len - i - 1] = traceSTR2[i];
+            outstr1arr(str1len - i - 1) = traceSTR1(i);
+            outstr2arr(str1len - i - 1) = traceSTR2(i);
         }
         this.outstr1 = String(outstr1arr);
         this.outstr2 = String(outstr2arr);
