@@ -98,9 +98,9 @@ public class SmithWatermanParallalBlockwise {
 
         this.finishStatus = new Array_2[Int](NUM_BLOCKS_X, NUM_BLOCKS_Y);
 
-        for (i in 0..(NUM_BLOCKS_X - 1)) {
-            for (j in 0..(NUM_BLOCKS_Y -1 )) {
-                finishStatus(i, j) = 0;
+        for (i in 0..(NUM_BLOCKS_X - 1n)) {
+            for (j in 0..(NUM_BLOCKS_Y -1n )) {
+                finishStatus(i, j) = 0n;
             }
         }
     }
@@ -151,12 +151,12 @@ public class SmithWatermanParallalBlockwise {
             prevCells(0, j) = DR_ZERO;
         }
 
-        finish for (i in 0..(this.NUM_BLOCKS_X - 1)) async {
+        finish for (i in 0n..(this.NUM_BLOCKS_X - 1n)) async {
                 var maxResult:Rail[Int] = workerThread(i);
-                if (maxResult(2) > max) {
-                    max = maxResult(2);
-                    maxi = maxResult(0);
-                    maxj = maxResult(1);
+                if (maxResult(2n) > max) {
+                    max = maxResult(2n);
+                    maxi = maxResult(0n);
+                    maxj = maxResult(1n);
                 }
         }
 
@@ -168,34 +168,72 @@ public class SmithWatermanParallalBlockwise {
 
     public def workerThread(var id:Int):Rail[Int] {
         var max:Int = -99999999n;
-        var maxi:Int = -1;
-        var maxj:Int = -1;
-        if (id == 0) {
-            for (i in 0..this.(NUM_BLOCKS_Y - 1)) {
+        var maxi:Int = -1n;
+        var maxj:Int = -1n;
+        if (id == 0n) {
+            for (i in 0n..this.(NUM_BLOCKS_Y - 1n)) {
                 var points:Rail[Int] = getBlockPosition(id, i);
-                var maxResult:Rail[Int] = diagnalCover(points(0), points(1), points(2), points(3));
-                if (maxResult(2) > max) {
-                    max = maxResult(2);
-                    maxi = maxResult(0);
-                    maxj = maxResult(1);
+                var maxResult:Rail[Int] = diagnalCover(points(0n), points(1n), points(2n), points(3n));
+                if (maxResult(2n) > max) {
+                    max = maxResult(2n);
+                    maxi = maxResult(0n);
+                    maxj = maxResult(1n);
                 }
-                this.finishStatus(id, i) = 1;
+                this.finishStatus(id, i) = 1n;
             }
         } else {
-            for (i in 0..this.(NUM_BLOCKS_Y - 1)) {
-                when (this.finishStatus(id -1, i) == 1) {}
+            for (i in 0n..this.(NUM_BLOCKS_Y - 1n)) {
+                when (this.finishStatus(id -1n, i) == 1n) {}
                 var points:Rail[Int] = getBlockPosition(id, i);
-                var maxResult:Rail[Int] = diagnalCover(points(0), points(1), points(2), points(3));
-                if (maxResult(2) > max) {
-                    max = maxResult(2);
-                    maxi = maxResult(0);
-                    maxj = maxResult(1);
+                var maxResult:Rail[Int] = diagnalCover(points(0n), points(1n), points(2n), points(3n));
+                if (maxResult(2n) > max) {
+                    max = maxResult(2n);
+                    maxi = maxResult(0n);
+                    maxj = maxResult(1n);
                 }
-                this.finishStatus(id, i) = 1;
+                this.finishStatus(id, i) = 1n;
             }
         }
         var point:Rail[Int] = [maxi, maxj, max];
         return point;
+    }
+
+    def getBlockPosition(var i:Int, var j:Int):Rail[Int] {
+
+        var position:Rail[Int];
+
+        //divide the score matrix to blocks
+        //get the num of blocks
+        //size of the martix is (length+1n)(length2+1n)
+        var numOfBlocksInHight = length1 / NUM_ROWS_IN_BLOCK + 1n;
+        var numOfBlocksInWidth = length2 / NUM_COLS_IN_BLOCK + 1n;
+
+        //get the final position
+        var leftI:Int;
+        var leftJ:Int;
+        var rightI:Int;
+        var rightJ:Int;
+
+        //topleft position: never excel, need not consider the special case
+        leftI = i * NUM_ROWS_IN_BLOCK + 1n;
+        leftJ = j * NUM_COLS_IN_BLOCK + 1n;
+
+        //special case: edge of the matrix
+        if(i == numOfBlocksInHight-1n) {
+            rightI = length1;
+        }else {
+            rightI = (i + 1n) * NUM_ROWS_IN_BLOCK + 1n;
+        }
+
+        if(j == numOfBlocksInWidth-1n) {
+            rightJ = length2;
+        }else {
+            rightJ = (j + 1n) * NUM_COLS_IN_BLOCK + 1n;
+        }
+
+        position = [leftI, leftJ, rightI, rightJ];
+
+        return position;
     }
 
     public def diagnalCover(var a1:Int, var b1:Int, var a2:Int, var b2:Int):Rail[Int] {
