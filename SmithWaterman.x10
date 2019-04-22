@@ -317,6 +317,29 @@ public class SmithWaterman {
         return 0n;
     }
 
+    public def printMatrix() {
+        for (i in 1..length1) {
+            for (j in 2..length2) {
+                Console.OUT.print(score(i, j) + " ");
+            }
+            Console.OUT.print("\n");
+        }
+        Console.OUT.print("\n");
+        for (i in 1..length1) {
+            for (j in 2..length2) {
+                Console.OUT.print(scoreLeft(i, j) + " ");
+            }
+            Console.OUT.print("\n");
+        }
+        Console.OUT.print("\n");
+        for (i in 1..length1) {
+            for (j in 2..length2) {
+                Console.OUT.print(scoreUp(i, j) + " ");
+            }
+            Console.OUT.print("\n");
+        }
+    }
+
 
     public static def main(argv: Rail[String]) {
         Console.OUT.println("Input the FASTA_FILE_1 FASTA_FILE_2 MATCH_FILE GAP_OPENING_PANALTY GAP_EXTENSION_PANALTY");
@@ -333,6 +356,7 @@ public class SmithWaterman {
 
         val sw:SmithWaterman = new SmithWaterman(fasta1, fasta2, match, openPanalty, extPanalty);
         sw.buildMatrix();
+        sw.printMatrix();
 
         Console.OUT.println("IO debug");
         //Console.OUT.println(sw.seq1);
