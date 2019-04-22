@@ -504,7 +504,7 @@ class BlosumReader {
         var chars: Rail[String] = header.split(" ");
         var value: Int = 0n;
         for (i in (0n .. (chars.size - 1n))) {
-            if (chars(i).equals(" ")) {
+            if (chars(i).equals("")) {
                 continue;
             } else {
                 SeqToNum.put(chars(i).charAt(0n), value);
