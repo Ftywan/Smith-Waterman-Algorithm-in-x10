@@ -209,7 +209,7 @@ public class SmithWatermanParallalTaskDAGBlockwise {
         var max:Int = -999999n; 
         var maxi:Int = -1n;
         var maxj:Int = -1n;
-        if (i > NUM_BLOCKS_X || j > NUM_BLOCKS_Y) {
+        if (i > (NUM_BLOCKS_X - 1n)|| j > (NUM_BLOCKS_Y - 1n)) {
             var point:Rail[Int] = [maxi, maxj, max];
             return point;
         }
