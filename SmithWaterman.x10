@@ -363,6 +363,8 @@ class BlosumReader {
             chars = line.split(" ");
             for (j in 0n .. NUMOFSEQ) {
                 this.BLOSUM62(i, j) = Int.parseInt(chars(j + 1n));
+                
+                Console.OUT.println(this.BLOSUM62(i, j));
             }
         }
     }
