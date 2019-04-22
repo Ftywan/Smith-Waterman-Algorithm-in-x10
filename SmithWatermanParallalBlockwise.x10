@@ -13,9 +13,13 @@ import x10.io.Console;
 import x10.lang.Char;
 import x10.lang.*;
 import x10.io.*;
+import x10.xrx.Runtime;
 
 
-public class SmithWaterman {
+
+public class SmithWatermanParallalBlockwise {
+
+    private val NUM_COLS_IN_BLOCK  = 16;
 
     //two sequences of AA
     private val seq1:String;
@@ -390,6 +394,8 @@ public class SmithWaterman {
 
     public static def main(argv: Rail[String]) {
         Console.OUT.println("Input the FASTA_FILE_1 FASTA_FILE_2 MATCH_FILE GAP_OPENING_PANALTY GAP_EXTENSION_PANALTY");
+        Console.OUT.println(Runtime.NTHREADS);
+        Console.OUT.println(Runtime.MAX_THREADS);
         val s = x10.io.Console.IN.readLine();
 
         val param = s.split(" ");
@@ -401,7 +407,7 @@ public class SmithWaterman {
         val extPanalty:Int = Int.parse(param(4n));
 
 
-        val sw:SmithWaterman = new SmithWaterman(fasta1, fasta2, match, openPanalty, extPanalty);
+        val sw:SmithWatermanParallalBlockwise = new SmithWatermanParallalBlockwise(fasta1, fasta2, match, openPanalty, extPanalty);
         sw.buildMatrix();
         //sw.printMatrix();
 
