@@ -175,6 +175,7 @@ public class SmithWatermanParallalBlockwise {
     }
 
     public def workerThread(var id:Int):Rail[Int] {
+        Console.OUT.println(id + " started.");
         var max:Int = -99999999n;
         var maxi:Int = -1n;
         var maxj:Int = -1n;
@@ -188,6 +189,7 @@ public class SmithWatermanParallalBlockwise {
                     maxj = maxResult(1n);
                 }
                 this.finishStatus(id, i) = 1n;
+                Console.OUT.println(id + " " + i + " finished");
             }
         } else {
             for (i in 0n..(this.NUM_BLOCKS_Y - 1n)) {
@@ -200,6 +202,7 @@ public class SmithWatermanParallalBlockwise {
                     maxj = maxResult(1n);
                 }
                 this.finishStatus(id, i) = 1n;
+                Console.OUT.println(id + " " + i + " finished");
             }
         }
         var point:Rail[Int] = [maxi, maxj, max];
