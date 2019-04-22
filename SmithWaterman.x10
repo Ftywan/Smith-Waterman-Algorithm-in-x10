@@ -204,6 +204,7 @@ public class SmithWaterman {
         } else if (0n == score(i, j)) {
             prevCells(i, j) |= DR_ZERO;
         }
+        Console.OUT.println("final:" + score(i, j));
         return score(i, j);
     }
 
