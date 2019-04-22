@@ -80,10 +80,20 @@ public class SmithWaterman {
 
     public def similarity(i:Int, j:Int):Int {
         //return blosum62(seqToNum.get(seq1.charAt(i-1n)), seqToNum.get(seq2.charAt(j-1n)));
-        if (seqToNum.get(seq1.charAt(i-1n)) == seqToNum.get(seq2.charAt(j-1n))) {
-            return 5n;
+        var char1:Char = seq1.charAt(i-1n);
+        var char2:Char = seq2.charAt(j-1n);
+        if (seqToNum.containsKey(char1)) {
+            if (seqToNum.containsKey(char2)) {
+                return blosum62(seqToNum.get(char1), seqToNum.get(char2));
+            } else {
+                return blosum62(seqToNum.get(char1), 23n);
+            }
         } else {
-            return 0n;
+            if (seqToNum.containsKey(char2)) {
+                return blosum62(23n, seqToNum.get(char2));
+            } else {
+                return blosum62(seqToNum.get(23n, 23n);
+            }
         }
     }
 
